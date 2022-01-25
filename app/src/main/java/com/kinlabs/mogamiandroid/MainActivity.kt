@@ -8,16 +8,17 @@ import android.widget.TextView
 import com.solana.Solana
 import com.solana.SolanaAccountStorage
 import com.solana.api.getBalance
-import com.solana.api.getTokenAccount
 import com.solana.api.getTokenAccountBalance
 import com.solana.api.getTokenAccountsByOwner
 import com.solana.core.Account
+import com.solana.core.DerivationPath
 import com.solana.core.PublicKey
 import com.solana.networking.NetworkingRouter
 import com.solana.networking.RPCEndpoint
 import okhttp3.OkHttpClient
+import org.bitcoinj.core.NetworkParameters
 import java.lang.Exception
-import java.util.*
+import org.bitcoinj.wallet.Wallet
 
 class MainActivity : AppCompatActivity() {
     private lateinit var addressText: TextView
@@ -48,13 +49,14 @@ class MainActivity : AppCompatActivity() {
         val solana = Solana(network, storage)
 
         createAccountButton.setOnClickListener {
-            val account = Account()
-            // No mnemonic :/
-            // Probably fork and add. They have the ability to read but not write mnemonics, should be simple to extend
-            Log.d(TAG, account.publicKey.toBase58())
-            Log.d(TAG, Arrays.toString(account.secretKey))
-            storage.save(account)
-            addressText.text = account.publicKey.toBase58()
+            val networkParameters = NetworkParameters.fromID("org.bitcoin.production")
+            Wallet(networkParameters).keyChainSeed.mnemonicCode?.let { mnemonic ->
+                val account = Account.fromMnemonic(mnemonic, "", DerivationPath.BIP44_M_44H_501H_0H)
+                Log.d(TAG, mnemonic.joinToString(" "))
+                Log.d(TAG, account.publicKey.toBase58())
+                storage.save(account)
+                addressText.text = account.publicKey.toBase58()
+            }
         }
 
         getBalanceButton.setOnClickListener {
