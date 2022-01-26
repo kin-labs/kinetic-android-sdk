@@ -17,3 +17,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Mogami Android"
 include ':app'
+include ':mogami'
