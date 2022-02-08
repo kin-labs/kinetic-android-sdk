@@ -15,14 +15,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var airdropButton: Button
     private lateinit var getBalanceButton: Button
 
-    private val TAG = MainActivity::class.java.simpleName
-    private val mogami = Mogami()
-
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        val mogami = Mogami(filesDir)
 
         addressText = findViewById(R.id.address_text)
         solBalanceText = findViewById(R.id.sol_balance_text)
