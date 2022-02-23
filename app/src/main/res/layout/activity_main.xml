@@ -67,16 +67,23 @@
             android:text="Create Account" />
 
         <Button
-            android:id="@+id/airdrop_button"
+            android:id="@+id/memo_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Airdrop" />
+            android:text="Generate Memo" />
 
         <Button
             android:id="@+id/get_balance_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Get Balance" />
+
+        <TextView
+            android:id="@+id/memo_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textSize="16sp" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
