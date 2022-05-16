@@ -3,6 +3,8 @@ import org.gradle.api.initialization.resolve.RepositoriesMode
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
     repositories {
+        maven { url "https://jitpack.io" }
+
         maven {
             url = "https://maven.pkg.github.com/ajamaica/Solana.kt"
             credentials {
