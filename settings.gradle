@@ -17,6 +17,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Mogami Android"
+rootProject.name = "Kinetic Android"
 include ':app'
-include ':mogami'
+include ':kinetic'
