@@ -7,6 +7,7 @@ import android.widget.Button
 import android.widget.TextView
 import com.kinlabs.kinetic.KinBinaryMemo
 import com.kinlabs.kinetic.Kinetic
+import com.kinlabs.kinetic.PublicKey
 
 class MainActivity : AppCompatActivity() {
     private lateinit var getConfigButton: Button

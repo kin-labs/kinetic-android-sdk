@@ -9,10 +9,10 @@ import java.io.IOException
 import java.util.*
 
 class BasicAccountStorage(filesDir: File) {
-    private var _account: HotAccount? = null
+    private var _account: KineticAccount? = null
     private var _filesDir: String = filesDir.absolutePath + "/kinetic/"
 
-    fun account(): Result<HotAccount> {
+    fun account(): Result<KineticAccount> {
         return if (_account != null) {
             Log.d("TAG", "Account in mem: " + _account!!.publicKey.toBase58())
             Result.success(_account!!)
@@ -20,7 +20,7 @@ class BasicAccountStorage(filesDir: File) {
             val accounts = getAllAccounts()
             if (!accounts.isEmpty()) {
                 val pkey = readFile(_filesDir, accounts[0] + ".key")
-                _account = HotAccount(pkey)
+                _account = KineticAccount(pkey)
                 Log.d("TAG", "Account in storage: " + _account!!.publicKey.toBase58())
                 Result.success(_account!!)
             } else {
@@ -35,8 +35,8 @@ class BasicAccountStorage(filesDir: File) {
         return Result.success(Unit)
     }
 
-    fun save(account: HotAccount): Result<Unit> {
-        writeToFile(_filesDir, account.publicKey.toBase58() + ".key", ByteArray(1))
+    fun save(account: KineticAccount): Result<Unit> {
+        writeToFile(_filesDir, account.publicKey.toBase58() + ".key", account.secretKey)
         _account = account
         return Result.success(Unit)
     }
