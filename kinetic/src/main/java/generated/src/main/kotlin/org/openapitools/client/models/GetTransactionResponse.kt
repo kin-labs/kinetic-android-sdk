@@ -20,27 +20,29 @@
 
 package org.openapitools.client.models
 
+import org.openapitools.client.models.SignatureStatus
+import org.openapitools.client.models.TransactionResponse
 
 import com.squareup.moshi.Json
 
 /**
  * 
  *
- * @param isSolanaOk 
- * @param isKineticOk 
- * @param time 
+ * @param signature 
+ * @param status 
+ * @param transaction 
  */
 
-data class AppHealth (
+data class GetTransactionResponse (
 
-    @Json(name = "isSolanaOk")
-    val isSolanaOk: kotlin.Boolean,
+    @Json(name = "signature")
+    val signature: kotlin.String,
 
-    @Json(name = "isKineticOk")
-    val isKineticOk: kotlin.Boolean,
+    @Json(name = "status")
+    val status: SignatureStatus,
 
-    @Json(name = "time")
-    val time: java.time.OffsetDateTime
+    @Json(name = "transaction")
+    val transaction: TransactionResponse
 
 )
 

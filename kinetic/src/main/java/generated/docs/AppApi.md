@@ -1,6 +1,6 @@
 # AppApi
 
-All URIs are relative to *https://devnet.kinetic.kin.org*
+All URIs are relative to *http://localhost:3000*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------

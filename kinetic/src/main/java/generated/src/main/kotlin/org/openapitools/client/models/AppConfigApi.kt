@@ -26,21 +26,17 @@ import com.squareup.moshi.Json
 /**
  * 
  *
- * @param isSolanaOk 
- * @param isKineticOk 
- * @param time 
+ * @param name 
+ * @param version 
  */
 
-data class AppHealth (
+data class AppConfigApi (
 
-    @Json(name = "isSolanaOk")
-    val isSolanaOk: kotlin.Boolean,
+    @Json(name = "name")
+    val name: kotlin.String,
 
-    @Json(name = "isKineticOk")
-    val isKineticOk: kotlin.Boolean,
-
-    @Json(name = "time")
-    val time: java.time.OffsetDateTime
+    @Json(name = "version")
+    val version: kotlin.String
 
 )
 

@@ -1,9 +1,9 @@
 /**
- * Kinetic
+ * @kin-kinetic/api
  *
  * The OpenAPI definition of the Kinetic API
  *
- * The version of the OpenAPI document: 1.0
+ * The version of the OpenAPI document: 1.0.0-rc.0
  * 
  *
  * Please note:
@@ -26,13 +26,20 @@ import com.squareup.moshi.Json
 /**
  * 
  *
+ * @param commitment 
  * @param environment 
  * @param index 
+ * @param lastValidBlockHeight 
  * @param mint 
  * @param tx 
+ * @param referenceId 
+ * @param referenceType 
  */
 
 data class CreateAccountRequest (
+
+    @Json(name = "commitment")
+    val commitment: CreateAccountRequest.Commitment,
 
     @Json(name = "environment")
     val environment: kotlin.String,
@@ -40,11 +47,32 @@ data class CreateAccountRequest (
     @Json(name = "index")
     val index: kotlin.Int,
 
+    @Json(name = "lastValidBlockHeight")
+    val lastValidBlockHeight: kotlin.Int,
+
     @Json(name = "mint")
     val mint: kotlin.String,
 
     @Json(name = "tx")
-    val tx: kotlin.ByteArray
+    val tx: kotlin.ByteArray,
 
-)
+    @Json(name = "referenceId")
+    val referenceId: kotlin.String? = null,
+
+    @Json(name = "referenceType")
+    val referenceType: kotlin.String? = null
+
+) {
+
+    /**
+     * 
+     *
+     * Values: confirmed,finalized,processed
+     */
+    enum class Commitment(val value: kotlin.String) {
+        @Json(name = "Confirmed") confirmed("Confirmed"),
+        @Json(name = "Finalized") finalized("Finalized"),
+        @Json(name = "Processed") processed("Processed");
+    }
+}
 

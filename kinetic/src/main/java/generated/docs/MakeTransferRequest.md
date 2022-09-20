@@ -9,9 +9,9 @@ Name | Type | Description | Notes
 **index** | **kotlin.Int** |  | 
 **mint** | **kotlin.String** |  | 
 **lastValidBlockHeight** | **kotlin.Int** |  | 
-**referenceId** | **kotlin.String** |  | 
-**referenceType** | **kotlin.String** |  | 
 **tx** | **kotlin.ByteArray** |  | 
+**referenceId** | **kotlin.String** |  |  [optional]
+**referenceType** | **kotlin.String** |  |  [optional]
 
 
 <a name="Commitment"></a>

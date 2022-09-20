@@ -1,9 +1,9 @@
 /**
- * Kinetic
+ * @kin-kinetic/api
  *
  * The OpenAPI definition of the Kinetic API
  *
- * The version of the OpenAPI document: 1.0
+ * The version of the OpenAPI document: 1.0.0-rc.0
  * 
  *
  * Please note:
@@ -31,9 +31,9 @@ import com.squareup.moshi.Json
  * @param index 
  * @param mint 
  * @param lastValidBlockHeight 
+ * @param tx 
  * @param referenceId 
  * @param referenceType 
- * @param tx 
  */
 
 data class MakeTransferRequest (
@@ -53,14 +53,14 @@ data class MakeTransferRequest (
     @Json(name = "lastValidBlockHeight")
     val lastValidBlockHeight: kotlin.Int,
 
+    @Json(name = "tx")
+    val tx: kotlin.ByteArray,
+
     @Json(name = "referenceId")
-    val referenceId: kotlin.String?,
+    val referenceId: kotlin.String? = null,
 
     @Json(name = "referenceType")
-    val referenceType: kotlin.String?,
-
-    @Json(name = "tx")
-    val tx: kotlin.ByteArray
+    val referenceType: kotlin.String? = null
 
 ) {
 

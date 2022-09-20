@@ -1,9 +1,9 @@
 /**
- * Kinetic
+ * @kin-kinetic/api
  *
  * The OpenAPI definition of the Kinetic API
  *
- * The version of the OpenAPI document: 1.0
+ * The version of the OpenAPI document: 1.0.0-rc.0
  * 
  *
  * Please note:
@@ -20,10 +20,11 @@
 
 package org.kinlabs.kinetic
 
-import org.openapitools.client.models.AppTransaction
+import org.openapitools.client.models.GetTransactionResponse
 import org.openapitools.client.models.LatestBlockhashResponse
 import org.openapitools.client.models.MakeTransferRequest
 import org.openapitools.client.models.MinimumRentExemptionBalanceResponse
+import org.openapitools.client.models.Transaction
 
 import org.openapitools.client.infrastructure.ApiClient
 import org.openapitools.client.infrastructure.ClientException
@@ -41,7 +42,7 @@ class TransactionApi(basePath: kotlin.String = defaultBasePath) : ApiClient(base
     companion object {
         @JvmStatic
         val defaultBasePath: String by lazy {
-            System.getProperties().getProperty("org.openapitools.client.baseUrl", "https://devnet.kinetic.kin.org")
+            System.getProperties().getProperty("org.openapitools.client.baseUrl", "http://localhost:3000")
         }
     }
 
@@ -163,23 +164,80 @@ class TransactionApi(basePath: kotlin.String = defaultBasePath) : ApiClient(base
     /**
     * 
     * 
-    * @param makeTransferRequest  
-    * @return AppTransaction
+    * @param environment  
+    * @param index  
+    * @param signature  
+    * @return GetTransactionResponse
     * @throws UnsupportedOperationException If the API returns an informational or redirection response
     * @throws ClientException If the API returns a client error response
     * @throws ServerException If the API returns a server error response
     */
     @Suppress("UNCHECKED_CAST")
     @Throws(UnsupportedOperationException::class, ClientException::class, ServerException::class)
-    fun makeTransfer(makeTransferRequest: MakeTransferRequest) : AppTransaction {
-        val localVariableConfig = makeTransferRequestConfig(makeTransferRequest = makeTransferRequest)
+    fun getTransaction(environment: kotlin.String, index: kotlin.Int, signature: kotlin.String) : GetTransactionResponse {
+        val localVariableConfig = getTransactionRequestConfig(environment = environment, index = index, signature = signature)
 
-        val localVarResponse = request<MakeTransferRequest, AppTransaction>(
+        val localVarResponse = request<Unit, GetTransactionResponse>(
             localVariableConfig
         )
 
         return when (localVarResponse.responseType) {
-            ResponseType.Success -> (localVarResponse as Success<*>).data as AppTransaction
+            ResponseType.Success -> (localVarResponse as Success<*>).data as GetTransactionResponse
+            ResponseType.Informational -> throw UnsupportedOperationException("Client does not support Informational responses.")
+            ResponseType.Redirection -> throw UnsupportedOperationException("Client does not support Redirection responses.")
+            ResponseType.ClientError -> {
+                val localVarError = localVarResponse as ClientError<*>
+                throw ClientException("Client error : ${localVarError.statusCode} ${localVarError.message.orEmpty()}", localVarError.statusCode, localVarResponse)
+            }
+            ResponseType.ServerError -> {
+                val localVarError = localVarResponse as ServerError<*>
+                throw ServerException("Server error : ${localVarError.statusCode} ${localVarError.message.orEmpty()}", localVarError.statusCode, localVarResponse)
+            }
+        }
+    }
+
+    /**
+    * To obtain the request config of the operation getTransaction
+    *
+    * @param environment  
+    * @param index  
+    * @param signature  
+    * @return RequestConfig
+    */
+    fun getTransactionRequestConfig(environment: kotlin.String, index: kotlin.Int, signature: kotlin.String) : RequestConfig<Unit> {
+        val localVariableBody = null
+        val localVariableQuery: MultiValueMap = mutableMapOf()
+        val localVariableHeaders: MutableMap<String, String> = mutableMapOf()
+
+        return RequestConfig(
+            method = RequestMethod.GET,
+            path = "/api/transaction/transaction/{environment}/{index}/{signature}".replace("{"+"environment"+"}", "$environment").replace("{"+"index"+"}", "$index").replace("{"+"signature"+"}", "$signature"),
+            query = localVariableQuery,
+            headers = localVariableHeaders,
+            body = localVariableBody
+        )
+    }
+
+    /**
+    * 
+    * 
+    * @param makeTransferRequest  
+    * @return Transaction
+    * @throws UnsupportedOperationException If the API returns an informational or redirection response
+    * @throws ClientException If the API returns a client error response
+    * @throws ServerException If the API returns a server error response
+    */
+    @Suppress("UNCHECKED_CAST")
+    @Throws(UnsupportedOperationException::class, ClientException::class, ServerException::class)
+    fun makeTransfer(makeTransferRequest: MakeTransferRequest) : Transaction {
+        val localVariableConfig = makeTransferRequestConfig(makeTransferRequest = makeTransferRequest)
+
+        val localVarResponse = request<MakeTransferRequest, Transaction>(
+            localVariableConfig
+        )
+
+        return when (localVarResponse.responseType) {
+            ResponseType.Success -> (localVarResponse as Success<*>).data as Transaction
             ResponseType.Informational -> throw UnsupportedOperationException("Client does not support Informational responses.")
             ResponseType.Redirection -> throw UnsupportedOperationException("Client does not support Redirection responses.")
             ResponseType.ClientError -> {

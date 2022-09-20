@@ -1,9 +1,9 @@
 /**
- * Kinetic
+ * @kin-kinetic/api
  *
  * The OpenAPI definition of the Kinetic API
  *
- * The version of the OpenAPI document: 1.0
+ * The version of the OpenAPI document: 1.0.0-rc.0
  * 
  *
  * Please note:
@@ -20,6 +20,7 @@
 
 package org.openapitools.client.models
 
+import org.openapitools.client.models.AppConfigApi
 import org.openapitools.client.models.AppConfigApp
 import org.openapitools.client.models.AppConfigEnvironment
 import org.openapitools.client.models.AppConfigMint
@@ -30,6 +31,7 @@ import com.squareup.moshi.Json
  * 
  *
  * @param app 
+ * @param api 
  * @param environment 
  * @param mint 
  * @param mints 
@@ -39,6 +41,9 @@ data class AppConfig (
 
     @Json(name = "app")
     val app: AppConfigApp,
+
+    @Json(name = "api")
+    val api: AppConfigApi,
 
     @Json(name = "environment")
     val environment: AppConfigEnvironment,

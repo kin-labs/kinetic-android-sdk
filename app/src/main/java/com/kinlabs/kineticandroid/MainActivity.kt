@@ -25,6 +25,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var paymentText: TextView
     private lateinit var memoButton: Button
     private lateinit var memoText: TextView
+    private lateinit var kinetic: Kinetic
 
     var accountId: String = "3rad7aFPdJS3CkYPSphtDAWCNB8BYpV2yc7o5ZjFQbDb"
 
@@ -32,7 +33,15 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val kinetic = Kinetic(filesDir)
+        Kinetic.Builder(
+            filesDir,
+            "devnet",
+            1,
+//                "http://10.0.2.2:3000"
+            "https://staging.kinetic.host"
+        ).build { kinetic: Kinetic ->
+            this.kinetic = kinetic
+        }
 
         getConfigButton = findViewById(R.id.get_config_button)
         serverConfigText = findViewById(R.id.server_config_text)
@@ -54,7 +63,7 @@ class MainActivity : AppCompatActivity() {
         getConfigButton.setOnClickListener {
             kinetic.getAppConfig { configSummary ->
                 runOnUiThread {
-                    serverConfigText.text = configSummary.toString()
+                    serverConfigText.text = "Got it"// configSummary.toString()
                 }
             }
         }

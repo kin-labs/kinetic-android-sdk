@@ -1,9 +1,9 @@
 /**
- * Kinetic
+ * @kin-kinetic/api
  *
  * The OpenAPI definition of the Kinetic API
  *
- * The version of the OpenAPI document: 1.0
+ * The version of the OpenAPI document: 1.0.0-rc.0
  * 
  *
  * Please note:
@@ -20,10 +20,10 @@
 
 package org.kinlabs.kinetic
 
-import org.openapitools.client.models.AppTransaction
 import org.openapitools.client.models.BalanceResponse
 import org.openapitools.client.models.CreateAccountRequest
 import org.openapitools.client.models.HistoryResponse
+import org.openapitools.client.models.Transaction
 
 import org.openapitools.client.infrastructure.ApiClient
 import org.openapitools.client.infrastructure.ClientException
@@ -41,7 +41,7 @@ class AccountApi(basePath: kotlin.String = defaultBasePath) : ApiClient(basePath
     companion object {
         @JvmStatic
         val defaultBasePath: String by lazy {
-            System.getProperties().getProperty("org.openapitools.client.baseUrl", "https://devnet.kinetic.kin.org")
+            System.getProperties().getProperty("org.openapitools.client.baseUrl", "http://localhost:3000")
         }
     }
 
@@ -49,22 +49,22 @@ class AccountApi(basePath: kotlin.String = defaultBasePath) : ApiClient(basePath
     * 
     * 
     * @param createAccountRequest  
-    * @return AppTransaction
+    * @return Transaction
     * @throws UnsupportedOperationException If the API returns an informational or redirection response
     * @throws ClientException If the API returns a client error response
     * @throws ServerException If the API returns a server error response
     */
     @Suppress("UNCHECKED_CAST")
     @Throws(UnsupportedOperationException::class, ClientException::class, ServerException::class)
-    fun createAccount(createAccountRequest: CreateAccountRequest) : AppTransaction {
+    fun createAccount(createAccountRequest: CreateAccountRequest) : Transaction {
         val localVariableConfig = createAccountRequestConfig(createAccountRequest = createAccountRequest)
 
-        val localVarResponse = request<CreateAccountRequest, AppTransaction>(
+        val localVarResponse = request<CreateAccountRequest, Transaction>(
             localVariableConfig
         )
 
         return when (localVarResponse.responseType) {
-            ResponseType.Success -> (localVarResponse as Success<*>).data as AppTransaction
+            ResponseType.Success -> (localVarResponse as Success<*>).data as Transaction
             ResponseType.Informational -> throw UnsupportedOperationException("Client does not support Informational responses.")
             ResponseType.Redirection -> throw UnsupportedOperationException("Client does not support Redirection responses.")
             ResponseType.ClientError -> {

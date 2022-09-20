@@ -1,9 +1,9 @@
 /**
- * Kinetic
+ * @kin-kinetic/api
  *
  * The OpenAPI definition of the Kinetic API
  *
- * The version of the OpenAPI document: 1.0
+ * The version of the OpenAPI document: 1.0.0-rc.0
  * 
  *
  * Please note:
@@ -20,7 +20,6 @@
 
 package org.kinlabs.kinetic
 
-import org.openapitools.client.models.AirdropStats
 import org.openapitools.client.models.RequestAirdropRequest
 import org.openapitools.client.models.RequestAirdropResponse
 
@@ -40,59 +39,8 @@ class AirdropApi(basePath: kotlin.String = defaultBasePath) : ApiClient(basePath
     companion object {
         @JvmStatic
         val defaultBasePath: String by lazy {
-            System.getProperties().getProperty("org.openapitools.client.baseUrl", "https://devnet.kinetic.kin.org")
+            System.getProperties().getProperty("org.openapitools.client.baseUrl", "http://localhost:3000")
         }
-    }
-
-    /**
-    * 
-    * 
-    * @return AirdropStats
-    * @throws UnsupportedOperationException If the API returns an informational or redirection response
-    * @throws ClientException If the API returns a client error response
-    * @throws ServerException If the API returns a server error response
-    */
-    @Suppress("UNCHECKED_CAST")
-    @Throws(UnsupportedOperationException::class, ClientException::class, ServerException::class)
-    fun airdropStats() : AirdropStats {
-        val localVariableConfig = airdropStatsRequestConfig()
-
-        val localVarResponse = request<Unit, AirdropStats>(
-            localVariableConfig
-        )
-
-        return when (localVarResponse.responseType) {
-            ResponseType.Success -> (localVarResponse as Success<*>).data as AirdropStats
-            ResponseType.Informational -> throw UnsupportedOperationException("Client does not support Informational responses.")
-            ResponseType.Redirection -> throw UnsupportedOperationException("Client does not support Redirection responses.")
-            ResponseType.ClientError -> {
-                val localVarError = localVarResponse as ClientError<*>
-                throw ClientException("Client error : ${localVarError.statusCode} ${localVarError.message.orEmpty()}", localVarError.statusCode, localVarResponse)
-            }
-            ResponseType.ServerError -> {
-                val localVarError = localVarResponse as ServerError<*>
-                throw ServerException("Server error : ${localVarError.statusCode} ${localVarError.message.orEmpty()}", localVarError.statusCode, localVarResponse)
-            }
-        }
-    }
-
-    /**
-    * To obtain the request config of the operation airdropStats
-    *
-    * @return RequestConfig
-    */
-    fun airdropStatsRequestConfig() : RequestConfig<Unit> {
-        val localVariableBody = null
-        val localVariableQuery: MultiValueMap = mutableMapOf()
-        val localVariableHeaders: MutableMap<String, String> = mutableMapOf()
-
-        return RequestConfig(
-            method = RequestMethod.GET,
-            path = "/api/airdrop/stats",
-            query = localVariableQuery,
-            headers = localVariableHeaders,
-            body = localVariableBody
-        )
     }
 
     /**

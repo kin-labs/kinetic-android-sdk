@@ -4,8 +4,10 @@ import android.util.Log
 import com.solana.Solana
 import com.solana.api.*
 import com.solana.core.*
+import com.solana.core.Transaction
 import com.solana.models.REQUIRED_ACCOUNT_SPACE
 import com.solana.networking.NetworkingRouter
+import com.solana.networking.OkHttpNetworkingRouter
 import com.solana.networking.RPCEndpoint
 import com.solana.programs.SystemProgram
 import com.solana.programs.TokenProgram
@@ -20,30 +22,54 @@ import java.io.File
 import java.math.BigDecimal
 
 
-class Kinetic(filesDir: File) {
+class Kinetic(filesDir: File, environment: String, appIndex: Int, endpoint: String, appConfig: AppConfig) {
+    data class Builder(
+        val filesDir: File,
+        val environment: String,
+        val appIndex: Int,
+        val endpoint: String
+    ) {
+        fun build(callback: (Kinetic) -> Unit) {
+            val appApi = AppApi(endpoint)
+            Thread {
+                val appConfig = appApi.getAppConfig(environment, appIndex)
+                callback(Kinetic(filesDir, environment, appIndex, endpoint, appConfig))
+            }.start()
+        }
+    }
+
     companion object {
-        val TOKEN_KIN = "kinXdEcpDQeHPEuQnqmUgtYykqKGVFq6CeVX5iAHJq6"
         val SAMPLE_WALLET = PublicKey("3rad7aFPdJS3CkYPSphtDAWCNB8BYpV2yc7o5ZjFQbDb") // (Pause For's mainnet hot wallet)
         val TEST_PKEY = byteArrayOf(237.toByte(),61,27,169.toByte(),183.toByte(),200.toByte(),219.toByte(),250.toByte(),32,89,115,224.toByte(),68,92,237.toByte(),44,34,53,36,147.toByte(),82,190.toByte(),225.toByte(),116,163.toByte(),215.toByte(),212.toByte(),255.toByte(),5,70,1,32,136.toByte(),85,123,196.toByte(),201.toByte(),2,233.toByte(),220.toByte(),145.toByte(),142.toByte(),168.toByte(),175.toByte(),71,28,86,110,99,89,47,93,20,8,35,15,158.toByte(),119,107,224.toByte(),63,207.toByte(),158.toByte(),97)
-        val TEST_ACCOUNT = Account(TEST_PKEY)
+        val TEST_ACCOUNT = HotAccount(TEST_PKEY)
         val MEMO_V1_PROGRAM_ID = PublicKey("Memo1UhkJRfHyvLMcVucJwxXeuD728EqVDDwQDxFMNo")
     }
 
-    val network = NetworkingRouter(RPCEndpoint.devnetSolana, OkHttpClient())
-    val storage = BasicAccountStorage(filesDir)
-    val solana = Solana(network)
+    val environment: String
+    val appIndex: Int
+    val network: NetworkingRouter
+    val storage: BasicAccountStorage
+    val solana: Solana
 
-    val accountApi = AccountApi("https://staging.kinetic.host")
-    val airdropApi = AirdropApi("https://staging.kinetic.host")
-    val transactionApi = TransactionApi("https://staging.kinetic.host")
-    val appApi = AppApi("https://staging.kinetic.host")
+    val accountApi: AccountApi
+    val airdropApi: AirdropApi
+    val transactionApi: TransactionApi
+    val appApi: AppApi
 
-    var appConfig = AppConfig(AppConfigApp(124, "Pause For"), AppConfigEnvironment("devnet", "test", AppConfigCluster("test", "test", "test", AppConfigCluster.Type.custom)), AppConfigMint(false,false,1,"test","test","test","test","test","test"),
-        emptyList
-   ())
+    var appConfig: AppConfig
 
-    val environment = "devnet"
-    val appIndex = 124
+    init {
+        this.environment = environment
+        this.appIndex = appIndex
+        this.appConfig = appConfig
+        network = OkHttpNetworkingRouter(RPCEndpoint.devnetSolana)
+        storage = BasicAccountStorage(filesDir)
+        solana = Solana(network)
+        accountApi = AccountApi(endpoint)
+        airdropApi = AirdropApi(endpoint)
+        transactionApi = TransactionApi(endpoint)
+        appApi = AppApi(endpoint)
+    }
 
     fun getAppConfig(callback: (AppConfig) -> Unit) {
         Thread {
@@ -65,13 +91,13 @@ class Kinetic(filesDir: File) {
 
     fun getTokenAccounts(accountId: String, callback: (List<String>) -> Unit) {
         Thread {
-            callback(accountApi.getTokenAccounts(environment, appIndex, accountId, appConfig.mint.symbol))
+            callback(accountApi.getTokenAccounts(environment, appIndex, accountId, appConfig.mint.publicKey))
         }.start()
     }
 
     fun getAccountHistory(accountId: String, callback: (List<HistoryResponse>) -> Unit) {
         Thread {
-            val res = accountApi.getHistory(environment, appIndex, accountId, appConfig.mint.symbol)
+            val res = accountApi.getHistory(environment, appIndex, accountId, appConfig.mint.publicKey)
             Log.d("TAG", res.toString())
             callback(res)
         }.start()
@@ -80,7 +106,7 @@ class Kinetic(filesDir: File) {
     fun requestAirdrop(account: String, amount: Int, callback: (String) -> Unit) {
         Thread {
             try {
-                val airdropRequest = RequestAirdropRequest(account, RequestAirdropRequest.Commitment.confirmed, environment, appIndex, appConfig.mint.symbol, amount.toString())
+                val airdropRequest = RequestAirdropRequest(account, RequestAirdropRequest.Commitment.confirmed, environment, appIndex, appConfig.mint.publicKey, amount.toString())
                 callback(airdropApi.requestAirdrop(airdropRequest).signature)
             } catch (e: Exception) {
                 callback(e.localizedMessage)
@@ -94,7 +120,7 @@ class Kinetic(filesDir: File) {
             Thread {
                 try {
                     val account =
-                        Account.fromMnemonic(mnemonic, "", DerivationPath.BIP44_M_44H_501H_0H)
+                        HotAccount.fromMnemonic(mnemonic, "", DerivationPath.BIP44_M_44H_501H_0H)
                     val recentBlockhash = transactionApi.getLatestBlockhash(environment, appIndex)
 
                     val tokenAccount = PublicKey.findProgramAddress(
@@ -109,7 +135,7 @@ class Kinetic(filesDir: File) {
                         it.onSuccess { balance ->
                             try {
                                 val transaction = Transaction()
-                                val newAccount = Account()
+                                val newAccount = HotAccount()
                                 val createAccountInstruction = SystemProgram.createAccount(
                                     fromPublicKey = account.publicKey,
                                     newAccountPublickey = tokenAccount.address,
@@ -127,13 +153,14 @@ class Kinetic(filesDir: File) {
                                 transaction.addInstruction(initializeAccountInstruction)
 
                                 transaction.setRecentBlockHash(recentBlockhash.blockhash)
+                                transaction.feePayer = PublicKey(appConfig.mint.feePayer)
+                                transaction.partialSign(account)
 
-                                transaction.sign(account)
-
-                                val txBytes = transaction.serialize()
+                                val txBytes = transaction.serialize(SerializeConfig(requireAllSignatures = false, verifySignatures = false))
 
                                 val res = accountApi.createAccount(
-                                    CreateAccountRequest(environment, appIndex, appConfig.mint.symbol, txBytes)
+                                    CreateAccountRequest(CreateAccountRequest.Commitment.confirmed, environment, appIndex, recentBlockhash.lastValidBlockHeight, appConfig.mint.publicKey, txBytes)
+//                                    CreateAccountRequest(environment, appIndex, appConfig.mint.publicKey, txBytes)
                                 )
                                 Log.d("TAG", res.signature!!)
                             } catch (e: Exception) {
@@ -150,8 +177,9 @@ class Kinetic(filesDir: File) {
         }
     }
 
-    fun submitPayment(accountId: String, callback: (AppTransaction) -> Unit) {
+    fun submitPayment(toPublicKey: String, callback: (org.openapitools.client.models.Transaction) -> Unit) {
         Thread {
+            val toPublicKey = PublicKey(toPublicKey)
             val recentBlockhash = transactionApi.getLatestBlockhash(environment, appIndex)
             val transaction = Transaction()
 
@@ -167,18 +195,21 @@ class Kinetic(filesDir: File) {
 
             val transferInstruction = TokenProgram.transfer(
                 TEST_ACCOUNT.publicKey,
-                PublicKey("ChZg9BGutz7LvPJk1MPAiDrzoVPcZvt4Ef25eBBoURn1"),
+//                storage.account().getOrThrow().publicKey,
+                toPublicKey,
                 100,
-                TEST_ACCOUNT.publicKey
+                TEST_ACCOUNT.publicKey,
+//                storage.account().getOrThrow().publicKey
             )
             transaction.addInstruction(transferInstruction)
             transaction.setRecentBlockHash(recentBlockhash.blockhash)
-            transaction.setFeePayer(SAMPLE_WALLET)
-            transaction.sign(TEST_ACCOUNT)
+            transaction.feePayer = PublicKey(appConfig.mint.feePayer)
+//            transaction.partialSign(storage.account().getOrThrow())
+            transaction.partialSign(TEST_ACCOUNT)
 
             try {
-                val txBytes = transaction.serialize()
-                val makeTransferRequest = MakeTransferRequest(MakeTransferRequest.Commitment.confirmed, environment, appIndex, appConfig.mint.symbol, recentBlockhash.lastValidBlockHeight, null, null, txBytes)
+                val txBytes = transaction.serialize(SerializeConfig(requireAllSignatures = false, verifySignatures = false))
+                val makeTransferRequest = MakeTransferRequest(MakeTransferRequest.Commitment.confirmed, environment, appIndex, appConfig.mint.publicKey, recentBlockhash.lastValidBlockHeight, txBytes)
                 callback(transactionApi.makeTransfer(makeTransferRequest))
             } catch (e: Exception) {
                 Log.d("TAG", e.localizedMessage)
@@ -194,7 +225,7 @@ class Kinetic(filesDir: File) {
         if (storage.account().isFailure) { // No account, create
             val networkParameters = NetworkParameters.fromID("org.bitcoin.production")
             Wallet(networkParameters).keyChainSeed.mnemonicCode?.let { mnemonic ->
-                val account = Account.fromMnemonic(mnemonic, "", DerivationPath.BIP44_M_44H_501H_0H)
+                val account = HotAccount.fromMnemonic(mnemonic, "", DerivationPath.BIP44_M_44H_501H_0H)
                 storage.save(account)
                 callback(account.publicKey.toBase58())
             }

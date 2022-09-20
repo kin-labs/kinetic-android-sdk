@@ -20,32 +20,30 @@
 
 package org.openapitools.client.models
 
+import org.openapitools.client.models.ConfirmedTransactionMeta
+import org.openapitools.client.models.TransactionData
 
 import com.squareup.moshi.Json
 
 /**
  * 
  *
- * @param signature 
+ * @param transaction 
+ * @param meta 
  * @param slot 
- * @param err 
- * @param memo 
  * @param blockTime 
  */
 
-data class ConfirmedSignatureInfo (
+data class TransactionResponse (
 
-    @Json(name = "signature")
-    val signature: kotlin.String,
+    @Json(name = "transaction")
+    val transaction: TransactionData,
+
+    @Json(name = "meta")
+    val meta: ConfirmedTransactionMeta,
 
     @Json(name = "slot")
     val slot: java.math.BigDecimal? = null,
-
-    @Json(name = "err")
-    val err: kotlin.String? = null,
-
-    @Json(name = "memo")
-    val memo: kotlin.String? = null,
 
     @Json(name = "blockTime")
     val blockTime: java.math.BigDecimal? = null

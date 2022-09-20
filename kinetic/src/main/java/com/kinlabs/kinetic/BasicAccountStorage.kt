@@ -1,19 +1,18 @@
 package com.kinlabs.kinetic
 
 import android.util.Log
-import com.solana.SolanaAccountStorage
-import com.solana.core.Account
+import com.solana.core.HotAccount
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
 import java.util.*
 
-class BasicAccountStorage(filesDir: File): SolanaAccountStorage {
-    private var _account: Account? = null
+class BasicAccountStorage(filesDir: File) {
+    private var _account: HotAccount? = null
     private var _filesDir: String = filesDir.absolutePath + "/kinetic/"
 
-    override fun account(): Result<Account> {
+    fun account(): Result<HotAccount> {
         return if (_account != null) {
             Log.d("TAG", "Account in mem: " + _account!!.publicKey.toBase58())
             Result.success(_account!!)
@@ -21,7 +20,7 @@ class BasicAccountStorage(filesDir: File): SolanaAccountStorage {
             val accounts = getAllAccounts()
             if (!accounts.isEmpty()) {
                 val pkey = readFile(_filesDir, accounts[0] + ".key")
-                _account = Account(pkey)
+                _account = HotAccount(pkey)
                 Log.d("TAG", "Account in storage: " + _account!!.publicKey.toBase58())
                 Result.success(_account!!)
             } else {
@@ -31,13 +30,13 @@ class BasicAccountStorage(filesDir: File): SolanaAccountStorage {
         }
     }
 
-    override fun clear(): Result<Unit> {
+    fun clear(): Result<Unit> {
         _account = null
         return Result.success(Unit)
     }
 
-    override fun save(account: Account): Result<Unit> {
-        writeToFile(_filesDir, account.publicKey.toBase58() + ".key", account.secretKey)
+    fun save(account: HotAccount): Result<Unit> {
+        writeToFile(_filesDir, account.publicKey.toBase58() + ".key", ByteArray(1))
         _account = account
         return Result.success(Unit)
     }

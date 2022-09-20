@@ -1,6 +1,6 @@
 # AccountApi
 
-All URIs are relative to *https://devnet.kinetic.kin.org*
+All URIs are relative to *http://localhost:3000*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -13,7 +13,7 @@ Method | HTTP request | Description
 
 <a name="createAccount"></a>
 # **createAccount**
-> AppTransaction createAccount(createAccountRequest)
+> Transaction createAccount(createAccountRequest)
 
 
 
@@ -26,7 +26,7 @@ Method | HTTP request | Description
 val apiInstance = AccountApi()
 val createAccountRequest : CreateAccountRequest =  // CreateAccountRequest | 
 try {
-    val result : AppTransaction = apiInstance.createAccount(createAccountRequest)
+    val result : Transaction = apiInstance.createAccount(createAccountRequest)
     println(result)
 } catch (e: ClientException) {
     println("4xx response calling AccountApi#createAccount")
@@ -45,7 +45,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**AppTransaction**](AppTransaction.md)
+[**Transaction**](Transaction.md)
 
 ### Authorization
 

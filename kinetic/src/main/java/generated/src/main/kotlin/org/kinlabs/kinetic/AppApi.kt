@@ -1,9 +1,9 @@
 /**
- * Kinetic
+ * @kin-kinetic/api
  *
  * The OpenAPI definition of the Kinetic API
  *
- * The version of the OpenAPI document: 1.0
+ * The version of the OpenAPI document: 1.0.0-rc.0
  * 
  *
  * Please note:
@@ -39,7 +39,7 @@ class AppApi(basePath: kotlin.String = defaultBasePath) : ApiClient(basePath) {
     companion object {
         @JvmStatic
         val defaultBasePath: String by lazy {
-            System.getProperties().getProperty("org.openapitools.client.baseUrl", "https://devnet.kinetic.kin.org")
+            System.getProperties().getProperty("org.openapitools.client.baseUrl", "http://localhost:3000")
         }
     }
 
