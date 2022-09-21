@@ -31,9 +31,9 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.core:core-ktx:1.7.0'
-    implementation 'androidx.appcompat:appcompat:1.4.1'
-    implementation 'com.google.android.material:material:1.5.0'
+    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation 'com.google.android.material:material:1.6.1'
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1"
     implementation files('libs/borshj-0.0.0.jar')
@@ -46,6 +46,8 @@ dependencies {
 
 //    implementation 'com.github.samdowd.SolanaKT:solana:1.1.8'
     implementation 'com.github.metaplex-foundation.SolanaKT:solana:1.2'
+
+    implementation 'com.google.code.gson:gson:2.8.6'
 }
 
 openApiGenerate {

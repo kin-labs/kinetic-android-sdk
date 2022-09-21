@@ -19,8 +19,8 @@ class BasicAccountStorage(filesDir: File) {
         } else {
             val accounts = getAllAccounts()
             if (!accounts.isEmpty()) {
-                val pkey = readFile(_filesDir, accounts[0] + ".key")
-                _account = KineticAccount(pkey)
+                val accountJson = readFile(_filesDir, accounts[0] + ".key")
+                _account = KineticAccount(accountJson)
                 Log.d("TAG", "Account in storage: " + _account!!.publicKey.toBase58())
                 Result.success(_account!!)
             } else {
@@ -36,7 +36,7 @@ class BasicAccountStorage(filesDir: File) {
     }
 
     fun save(account: KineticAccount): Result<Unit> {
-        writeToFile(_filesDir, account.publicKey.toBase58() + ".key", account.secretKey)
+        writeToFile(_filesDir, account.publicKey.toBase58() + ".key", account.toJson())
         _account = account
         return Result.success(Unit)
     }
@@ -55,7 +55,7 @@ class BasicAccountStorage(filesDir: File) {
         return accounts
     }
 
-    private fun writeToFile(directory: String, fileName: String, body: ByteArray): Boolean {
+    private fun writeToFile(directory: String, fileName: String, body: String): Boolean {
         var outputStream: FileOutputStream? = null
         return try {
             val file = File(directory, fileName)
@@ -68,7 +68,7 @@ class BasicAccountStorage(filesDir: File) {
             }
 
             outputStream = FileOutputStream(file)
-            outputStream.write(body)
+            outputStream.write(body.toByteArray(Charsets.UTF_8))
 
             true
         } catch (e: IOException) {
@@ -79,21 +79,21 @@ class BasicAccountStorage(filesDir: File) {
         }
     }
 
-    private fun readFile(directory: String, fileName: String): ByteArray {
+    private fun readFile(directory: String, fileName: String): String {
         var inputStream: FileInputStream? = null
 
         val file = File(directory, fileName)
         if (!file.exists()) {
-            return ByteArray(0)
+            return ""
         }
 
         return try {
             inputStream = FileInputStream(file)
-            inputStream.readBytes()
-
+            var bytes = inputStream.readBytes()
+            bytes.toString(Charsets.UTF_8)
         } catch (e: IOException) {
             e.printStackTrace()
-            return ByteArray(0)
+            return ""
 
         } finally {
             inputStream?.close()

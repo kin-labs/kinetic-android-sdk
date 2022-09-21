@@ -1,5 +1,6 @@
 package com.kinlabs.kinetic
 
+import com.google.gson.Gson
 import com.solana.core.Account
 import com.solana.core.DerivationPath
 import com.solana.core.HotAccount
@@ -15,6 +16,7 @@ import org.bitcoinj.crypto.MnemonicCode
 import org.bitcoinj.wallet.Wallet
 import java.nio.ByteBuffer
 import java.util.*
+
 
 class KineticAccount: Account {
     private var keyPair: TweetNaclFast.Signature.KeyPair
@@ -41,6 +43,12 @@ class KineticAccount: Account {
         keyPair = TweetNaclFast.Signature.keyPair_fromSecretKey(secretKey)
     }
 
+    constructor(json: String) {
+        val account = Gson().fromJson(json, KineticAccount::class.java)
+        keyPair = account.keyPair
+        mnemonic = account.mnemonic
+    }
+
     private constructor(keyPair: TweetNaclFast.Signature.KeyPair) {
         this.keyPair = keyPair
     }
@@ -56,35 +64,7 @@ class KineticAccount: Account {
     val secretKey: ByteArray
         get() = keyPair.secretKey
 
-    companion object {
-        /**
-         * Creates an [HotAccount] object from a Sollet-exported JSON string (array)
-         * @param json Sollet-exported JSON string (array)
-         * @return [HotAccount] built from Sollet-exported private key
-         */
-        fun fromJson(json: String): KineticAccount {
-            return KineticAccount(convertJsonStringToByteArray(json))
-        }
-
-        /**
-         * Convert's a Sollet-exported JSON string into a byte array usable for [HotAccount] instantiation
-         * @param characters Sollet-exported JSON string
-         * @return byte array usable in [HotAccount] instantiation
-         */
-        private fun convertJsonStringToByteArray(characters: String): ByteArray {
-            // Create resulting byte array
-            val buffer = ByteBuffer.allocate(64)
-
-            // Convert json array into String array
-            val sanitizedJson = characters.replace("\\[".toRegex(), "").replace("]".toRegex(), "")
-            val chars = sanitizedJson.split(",").toTypedArray()
-
-            // Convert each String character into byte and put it in the buffer
-            Arrays.stream(chars).forEach { character: String ->
-                val byteValue = character.toInt().toByte()
-                buffer.put(byteValue)
-            }
-            return buffer.array()
-        }
+    fun toJson(): String {
+        return Gson().toJson(this)
     }
 }
