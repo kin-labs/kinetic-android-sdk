@@ -89,24 +89,24 @@ class Kinetic(filesDir: File, environment: String, appIndex: Int, endpoint: Stri
         }.start()
     }
 
-    fun getTokenAccounts(accountId: String, callback: (List<String>) -> Unit) {
+    fun getTokenAccounts(accountId: String, mint: AppConfigMint? = null, callback: (List<String>) -> Unit) {
         Thread {
-            callback(accountApi.getTokenAccounts(environment, appIndex, accountId, appConfig.mint.publicKey))
+            callback(accountApi.getTokenAccounts(environment, appIndex, accountId, mint?.publicKey ?: appConfig.mint.publicKey))
         }.start()
     }
 
-    fun getAccountHistory(accountId: String, callback: (List<HistoryResponse>) -> Unit) {
+    fun getAccountHistory(accountId: String, mint: AppConfigMint? = null, callback: (List<HistoryResponse>) -> Unit) {
         Thread {
-            val res = accountApi.getHistory(environment, appIndex, accountId, appConfig.mint.publicKey)
+            val res = accountApi.getHistory(environment, appIndex, accountId, mint?.publicKey ?: appConfig.mint.publicKey)
             Log.d("TAG", res.toString())
             callback(res)
         }.start()
     }
 
-    fun requestAirdrop(account: String, amount: Int, callback: (String) -> Unit) {
+    fun requestAirdrop(account: String, amount: Int, mint: AppConfigMint? = null, commitment: RequestAirdropRequest.Commitment = RequestAirdropRequest.Commitment.confirmed, callback: (String) -> Unit) {
         Thread {
             try {
-                val airdropRequest = RequestAirdropRequest(account, RequestAirdropRequest.Commitment.confirmed, environment, appIndex, appConfig.mint.publicKey, amount.toString())
+                val airdropRequest = RequestAirdropRequest(account, commitment, environment, appIndex, mint?.publicKey ?: appConfig.mint.publicKey, amount.toString())
                 callback(airdropApi.requestAirdrop(airdropRequest).signature)
             } catch (e: Exception) {
                 callback(e.localizedMessage)
@@ -114,7 +114,13 @@ class Kinetic(filesDir: File, environment: String, appIndex: Int, endpoint: Stri
         }.start()
     }
 
-    fun createAccount(callback: (CreateAccountResponse) -> Unit) {
+    fun createAccount(
+        mint: AppConfigMint? = null,
+        commitment: CreateAccountRequest.Commitment = CreateAccountRequest.Commitment.confirmed,
+        referenceId: String? = null,
+        referenceType: String? = null,
+        callback: (CreateAccountResponse) -> Unit
+    ) {
         val networkParameters = NetworkParameters.fromID("org.bitcoin.production")
         Wallet(networkParameters).keyChainSeed.mnemonicCode?.let { mnemonic ->
             Thread {
@@ -147,20 +153,28 @@ class Kinetic(filesDir: File, environment: String, appIndex: Int, endpoint: Stri
 
                                 val initializeAccountInstruction = TokenProgram.initializeAccount(
                                     account = tokenAccount.address,
-                                    mint = PublicKey(appConfig.mint.publicKey).solanaPublicKey,
+                                    mint = PublicKey(mint?.publicKey ?: appConfig.mint.publicKey).solanaPublicKey,
                                     owner = account.publicKey
                                 )
                                 transaction.addInstruction(initializeAccountInstruction)
 
                                 transaction.setRecentBlockHash(recentBlockhash.blockhash)
-                                transaction.feePayer = PublicKey(appConfig.mint.feePayer).solanaPublicKey
+                                transaction.feePayer = PublicKey(mint?.publicKey ?: appConfig.mint.feePayer).solanaPublicKey
                                 transaction.partialSign(account)
 
                                 val txBytes = transaction.serialize(SerializeConfig(requireAllSignatures = false, verifySignatures = false))
 
                                 val res = accountApi.createAccount(
-                                    CreateAccountRequest(CreateAccountRequest.Commitment.confirmed, environment, appIndex, recentBlockhash.lastValidBlockHeight, appConfig.mint.publicKey, txBytes)
-//                                    CreateAccountRequest(environment, appIndex, appConfig.mint.publicKey, txBytes)
+                                    CreateAccountRequest(
+                                        commitment,
+                                        environment,
+                                        appIndex,
+                                        recentBlockhash.lastValidBlockHeight,
+                                        mint?.publicKey ?: appConfig.mint.publicKey,
+                                        txBytes,
+                                        referenceId,
+                                        referenceType
+                                    )
                                 )
                                 Log.d("TAG", res.signature!!)
                             } catch (e: Exception) {
@@ -177,7 +191,14 @@ class Kinetic(filesDir: File, environment: String, appIndex: Int, endpoint: Stri
         }
     }
 
-    fun submitPayment(toPublicKey: String, callback: (org.openapitools.client.models.Transaction) -> Unit) {
+    fun submitPayment(
+        toPublicKey: String,
+        mint: AppConfigMint? = null,
+        commitment: MakeTransferRequest.Commitment = MakeTransferRequest.Commitment.confirmed,
+        referenceId: String? = null,
+        referenceType: String? = null,
+        callback: (org.openapitools.client.models.Transaction) -> Unit
+    ) {
         Thread {
             val toPublicKey = PublicKey(toPublicKey)
             val recentBlockhash = transactionApi.getLatestBlockhash(environment, appIndex)
@@ -203,13 +224,22 @@ class Kinetic(filesDir: File, environment: String, appIndex: Int, endpoint: Stri
             )
             transaction.addInstruction(transferInstruction)
             transaction.setRecentBlockHash(recentBlockhash.blockhash)
-            transaction.feePayer = PublicKey(appConfig.mint.feePayer).solanaPublicKey
+            transaction.feePayer = PublicKey(mint?.feePayer ?: appConfig.mint.feePayer).solanaPublicKey
 //            transaction.partialSign(storage.account().getOrThrow())
             transaction.partialSign(TEST_ACCOUNT)
 
             try {
                 val txBytes = transaction.serialize(SerializeConfig(requireAllSignatures = false, verifySignatures = false))
-                val makeTransferRequest = MakeTransferRequest(MakeTransferRequest.Commitment.confirmed, environment, appIndex, appConfig.mint.publicKey, recentBlockhash.lastValidBlockHeight, txBytes)
+                val makeTransferRequest = MakeTransferRequest(
+                    commitment,
+                    environment,
+                    appIndex,
+                    mint?.publicKey ?: appConfig.mint.publicKey,
+                    recentBlockhash.lastValidBlockHeight,
+                    txBytes,
+                    referenceId,
+                    referenceType
+                )
                 callback(transactionApi.makeTransfer(makeTransferRequest))
             } catch (e: Exception) {
                 Log.d("TAG", e.localizedMessage)
