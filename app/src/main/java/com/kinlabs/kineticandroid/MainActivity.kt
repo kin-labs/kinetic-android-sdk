@@ -7,6 +7,7 @@ import android.widget.Button
 import android.widget.TextView
 import com.kinlabs.kinetic.KinBinaryMemo
 import com.kinlabs.kinetic.Kinetic
+import com.kinlabs.kinetic.KineticAccount
 import com.kinlabs.kinetic.PublicKey
 
 class MainActivity : AppCompatActivity() {
@@ -26,9 +27,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var paymentText: TextView
     private lateinit var memoButton: Button
     private lateinit var memoText: TextView
-    private lateinit var kinetic: Kinetic
 
-    var accountId: String = "3rad7aFPdJS3CkYPSphtDAWCNB8BYpV2yc7o5ZjFQbDb"
+    private lateinit var kinetic: Kinetic
+    private lateinit var account: KineticAccount
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,10 +39,13 @@ class MainActivity : AppCompatActivity() {
             filesDir,
             "devnet",
             1,
-//                "http://10.0.2.2:3000"
-            "https://staging.kinetic.host"
+                "http://10.0.2.2:3000"
+//            "https://staging.kinetic.host"
         ).build { kinetic: Kinetic ->
             this.kinetic = kinetic
+            kinetic.createAccountDirect {
+                account = it
+            }
         }
 
         getConfigButton = findViewById(R.id.get_config_button)
@@ -70,7 +74,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         getBalanceButton.setOnClickListener {
-            kinetic.getBalance(accountId) { balance ->
+            kinetic.getBalance(account.publicKey.toBase58()) { balance ->
                 runOnUiThread {
                     kinBalanceText.text = balance
                 }
@@ -88,7 +92,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         getTokenAccountsButton.setOnClickListener {
-            kinetic.getTokenAccounts(accountId) {
+            kinetic.getTokenAccounts(account.publicKey.toBase58()) {
                 runOnUiThread {
                     tokenAccountsText.text = it.toString()
                 }
@@ -96,7 +100,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         getAccountHistoryButton.setOnClickListener {
-            kinetic.getAccountHistory(accountId) {
+            kinetic.getAccountHistory(account.publicKey.toBase58()) {
                 runOnUiThread {
                     accountHistoryText.text = it.toString()
                 }
@@ -104,7 +108,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         airdropButton.setOnClickListener {
-            kinetic.requestAirdrop(accountId, 100) {
+            kinetic.requestAirdrop(account.publicKey.toBase58(), 100) {
                 runOnUiThread {
                     airdropText.text = it
                 }
@@ -112,7 +116,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         createAccountButton.setOnClickListener {
-            kinetic.createAccount { response ->
+            kinetic.createAccount(account) { response ->
                 runOnUiThread {
                     createAccountText.text = response.toString()
                 }
@@ -120,7 +124,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         submitPaymentButton.setOnClickListener {
-            kinetic.submitPayment(accountId) {
+            kinetic.submitPayment(account.publicKey.toBase58()) {
 
             }
         }

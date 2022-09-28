@@ -115,80 +115,75 @@ class Kinetic(filesDir: File, environment: String, appIndex: Int, endpoint: Stri
     }
 
     fun createAccount(
+        account: KineticAccount,
         mint: AppConfigMint? = null,
-        commitment: CreateAccountRequest.Commitment = CreateAccountRequest.Commitment.confirmed,
+        commitment: CreateAccountRequest.Commitment = CreateAccountRequest.Commitment.finalized,
         referenceId: String? = null,
         referenceType: String? = null,
         callback: (CreateAccountResponse) -> Unit
     ) {
-        val networkParameters = NetworkParameters.fromID("org.bitcoin.production")
-        Wallet(networkParameters).keyChainSeed.mnemonicCode?.let { mnemonic ->
-            Thread {
-                try {
-                    val account =
-                        HotAccount.fromMnemonic(mnemonic, "", DerivationPath.BIP44_M_44H_501H_0H)
-                    val recentBlockhash = transactionApi.getLatestBlockhash(environment, appIndex)
+        Thread {
+            try {
+                val recentBlockhash = transactionApi.getLatestBlockhash(environment, appIndex)
 
-                    val tokenAccount = com.solana.core.PublicKey.findProgramAddress(
-                        listOf(
-                            account.publicKey.pubkey,
-                            PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA").solanaPublicKey.pubkey,
-                            PublicKey(appConfig.mint.publicKey).solanaPublicKey.pubkey
-                        ), PublicKey("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL").solanaPublicKey
-                    )
+                val tokenAccount = com.solana.core.PublicKey.findProgramAddress(
+                    listOf(
+                        account.solanaAccount.publicKey.pubkey,
+                        PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA").solanaPublicKey.pubkey,
+                        PublicKey(appConfig.mint.publicKey).solanaPublicKey.pubkey
+                    ), PublicKey("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL").solanaPublicKey
+                )
 
-                    solana.api.getMinimumBalanceForRentExemption(REQUIRED_ACCOUNT_SPACE) {
-                        it.onSuccess { balance ->
-                            try {
-                                val transaction = Transaction()
-                                val newAccount = HotAccount()
-                                val createAccountInstruction = SystemProgram.createAccount(
-                                    fromPublicKey = account.publicKey,
-                                    newAccountPublickey = tokenAccount.address,
-                                    lamports = balance,
-                                    REQUIRED_ACCOUNT_SPACE,
-                                    TokenProgram.PROGRAM_ID
+                solana.api.getMinimumBalanceForRentExemption(REQUIRED_ACCOUNT_SPACE) {
+                    it.onSuccess { balance ->
+                        try {
+                            val transaction = Transaction()
+                            val createAccountInstruction = SystemProgram.createAccount(
+                                fromPublicKey = account.solanaAccount.publicKey,
+                                newAccountPublickey = tokenAccount.address,
+                                lamports = balance,
+                                REQUIRED_ACCOUNT_SPACE,
+                                TokenProgram.PROGRAM_ID
+                            )
+                            transaction.addInstruction(createAccountInstruction)
+
+                            val initializeAccountInstruction = TokenProgram.initializeAccount(
+                                account = tokenAccount.address,
+                                mint = PublicKey(mint?.publicKey ?: appConfig.mint.publicKey).solanaPublicKey,
+                                owner = account.solanaAccount.publicKey
+                            )
+                            transaction.addInstruction(initializeAccountInstruction)
+
+                            transaction.setRecentBlockHash(recentBlockhash.blockhash)
+                            transaction.feePayer = PublicKey(mint?.feePayer ?: appConfig.mint.feePayer).solanaPublicKey
+                            transaction.partialSign(account.solanaAccount)
+
+                            val txBytes = transaction.serialize(SerializeConfig(requireAllSignatures = false, verifySignatures = false))
+
+                            val res = accountApi.createAccount(
+                                CreateAccountRequest(
+                                    commitment,
+                                    environment,
+                                    appIndex,
+                                    recentBlockhash.lastValidBlockHeight,
+                                    mint?.publicKey ?: appConfig.mint.publicKey,
+                                    txBytes,
+                                    referenceId,
+                                    referenceType
                                 )
-                                transaction.addInstruction(createAccountInstruction)
-
-                                val initializeAccountInstruction = TokenProgram.initializeAccount(
-                                    account = tokenAccount.address,
-                                    mint = PublicKey(mint?.publicKey ?: appConfig.mint.publicKey).solanaPublicKey,
-                                    owner = account.publicKey
-                                )
-                                transaction.addInstruction(initializeAccountInstruction)
-
-                                transaction.setRecentBlockHash(recentBlockhash.blockhash)
-                                transaction.feePayer = PublicKey(mint?.publicKey ?: appConfig.mint.feePayer).solanaPublicKey
-                                transaction.partialSign(account)
-
-                                val txBytes = transaction.serialize(SerializeConfig(requireAllSignatures = false, verifySignatures = false))
-
-                                val res = accountApi.createAccount(
-                                    CreateAccountRequest(
-                                        commitment,
-                                        environment,
-                                        appIndex,
-                                        recentBlockhash.lastValidBlockHeight,
-                                        mint?.publicKey ?: appConfig.mint.publicKey,
-                                        txBytes,
-                                        referenceId,
-                                        referenceType
-                                    )
-                                )
-                                Log.d("TAG", res.signature!!)
-                            } catch (e: Exception) {
-                                Log.d("TAG", e.localizedMessage)
-                            }
-                        }.onFailure {
-                            Log.d("TAG", it.localizedMessage)
+                            )
+                            Log.d("TAG", res.signature!!)
+                        } catch (e: Exception) {
+                            Log.d("TAG", e.localizedMessage)
                         }
+                    }.onFailure {
+                        Log.d("TAG", it.localizedMessage)
                     }
-                } catch (e: Exception) {
-                    Log.d("TAG", e.localizedMessage)
                 }
-            }.start()
-        }
+            } catch (e: Exception) {
+                Log.d("TAG", e.localizedMessage)
+            }
+        }.start()
     }
 
     fun submitPayment(
@@ -214,19 +209,27 @@ class Kinetic(filesDir: File, environment: String, appIndex: Int, endpoint: Stri
             )
             transaction.addInstruction(memoInstruction)
 
-            val transferInstruction = TokenProgram.transfer(
-                TEST_ACCOUNT.publicKey,
-//                storage.account().getOrThrow().publicKey,
+            val transferInstruction = TokenProgram.transferChecked(
+                TEST_ACCOUNT.solanaAccount.publicKey,
                 toPublicKey.solanaPublicKey,
-                100,
-                TEST_ACCOUNT.publicKey,
-//                storage.account().getOrThrow().publicKey
+                1,
+                (mint?.decimals ?: appConfig.mint.decimals).toByte(),
+                TEST_ACCOUNT.solanaAccount.publicKey,
+                PublicKey(mint?.publicKey ?: appConfig.mint.publicKey).solanaPublicKey
             )
+//            val transferInstruction = TokenProgram.transfer(
+//                TEST_ACCOUNT.publicKey,
+////                storage.account().getOrThrow().publicKey,
+//                toPublicKey.solanaPublicKey,
+//                100,
+//                TEST_ACCOUNT.publicKey,
+////                storage.account().getOrThrow().publicKey
+//            )
             transaction.addInstruction(transferInstruction)
             transaction.setRecentBlockHash(recentBlockhash.blockhash)
             transaction.feePayer = PublicKey(mint?.feePayer ?: appConfig.mint.feePayer).solanaPublicKey
 //            transaction.partialSign(storage.account().getOrThrow())
-            transaction.partialSign(TEST_ACCOUNT)
+            transaction.partialSign(TEST_ACCOUNT.solanaAccount)
 
             try {
                 val txBytes = transaction.serialize(SerializeConfig(requireAllSignatures = false, verifySignatures = false))
@@ -251,13 +254,24 @@ class Kinetic(filesDir: File, environment: String, appIndex: Int, endpoint: Stri
     // START: Direct to Solana functions, don't touch Kinetic backend
     ////
 
-    fun createAccountDirect(callback: (String) -> Unit) {
+    fun getLocalAccount(callback: (KineticAccount?) -> Unit) {
+        storage.account()
+            .onSuccess {
+                callback(it)
+            }
+            .onFailure {
+                Log.d("TAG", it.localizedMessage)
+                callback(null)
+            }
+    }
+
+    fun createAccountDirect(callback: (KineticAccount) -> Unit) {
         if (storage.account().isFailure) { // No account, create
             val account = KineticAccount()
             storage.save(account)
-            callback(account.publicKey.toBase58())
+            callback(account)
         } else {
-            callback(storage.account().getOrNull()!!.publicKey.toBase58())
+            callback(storage.account().getOrNull()!!)
         }
     }
 

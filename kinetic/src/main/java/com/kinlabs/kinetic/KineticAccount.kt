@@ -4,7 +4,6 @@ import com.google.gson.Gson
 import com.solana.core.Account
 import com.solana.core.DerivationPath
 import com.solana.core.HotAccount
-import com.solana.core.PublicKey
 import com.solana.vendor.TweetNaclFast
 import com.solana.vendor.bip32.wallet.DerivableType
 import com.solana.vendor.bip32.wallet.SolanaBip44
@@ -18,9 +17,10 @@ import java.nio.ByteBuffer
 import java.util.*
 
 
-class KineticAccount: Account {
+class KineticAccount {
     private var keyPair: TweetNaclFast.Signature.KeyPair
     var mnemonic: List<String>? = null
+    internal var solanaAccount: HotAccount
 
     constructor(mnemonic: List<String>? = null, passphrase: String = "") {
         val solanaBip44 = SolanaBip44()
@@ -31,35 +31,35 @@ class KineticAccount: Account {
             val privateKey = solanaBip44.getPrivateKeyFromSeed(seed, DerivableType.BIP44)
             keyPair = TweetNaclFast.Signature.keyPair_fromSeed(privateKey)
             this.mnemonic = newMnemonic
+            this.solanaAccount = HotAccount(keyPair.secretKey)
         } else {
             val seed = MnemonicCode.toSeed(mnemonic, passphrase)
             val privateKey = solanaBip44.getPrivateKeyFromSeed(seed, DerivableType.BIP44)
             keyPair = TweetNaclFast.Signature.keyPair_fromSeed(privateKey)
             this.mnemonic = mnemonic
+            this.solanaAccount = HotAccount(keyPair.secretKey)
         }
     }
 
     constructor(secretKey: ByteArray) {
         keyPair = TweetNaclFast.Signature.keyPair_fromSecretKey(secretKey)
+        this.solanaAccount = HotAccount(keyPair.secretKey)
     }
 
     constructor(json: String) {
         val account = Gson().fromJson(json, KineticAccount::class.java)
         keyPair = account.keyPair
         mnemonic = account.mnemonic
+        solanaAccount = HotAccount(keyPair.secretKey)
     }
 
     private constructor(keyPair: TweetNaclFast.Signature.KeyPair) {
         this.keyPair = keyPair
+        this.solanaAccount = HotAccount(keyPair.secretKey)
     }
 
-    override val publicKey: PublicKey
-        get() = PublicKey(keyPair.publicKey)
-
-    override fun sign(serializedMessage: ByteArray): ByteArray {
-        val signatureProvider = TweetNaclFast.Signature(ByteArray(0), secretKey)
-        return signatureProvider.detached(serializedMessage)
-    }
+    val publicKey: com.kinlabs.kinetic.PublicKey
+        get() = com.kinlabs.kinetic.PublicKey(keyPair.publicKey)
 
     val secretKey: ByteArray
         get() = keyPair.secretKey

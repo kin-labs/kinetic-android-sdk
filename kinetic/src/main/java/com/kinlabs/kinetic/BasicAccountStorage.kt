@@ -21,7 +21,7 @@ class BasicAccountStorage(filesDir: File) {
             if (!accounts.isEmpty()) {
                 val accountJson = readFile(_filesDir, accounts[0] + ".key")
                 _account = KineticAccount(accountJson)
-                Log.d("TAG", "Account in storage: " + _account!!.publicKey.toBase58())
+//                Log.d("TAG", "Account in storage: " + _account!!.publicKey.toBase58())
                 Result.success(_account!!)
             } else {
                 Log.d("TAG", "No account stored")
