@@ -124,7 +124,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         submitPaymentButton.setOnClickListener {
-            kinetic.submitPayment(account.publicKey.toBase58()) {
+            kinetic.submitPayment(account, "3rad7aFPdJS3CkYPSphtDAWCNB8BYpV2yc7o5ZjFQbDb") {
 
             }
         }

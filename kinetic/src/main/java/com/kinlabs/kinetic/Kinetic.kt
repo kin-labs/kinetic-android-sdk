@@ -40,8 +40,6 @@ class Kinetic(filesDir: File, environment: String, appIndex: Int, endpoint: Stri
 
     companion object {
         val SAMPLE_WALLET = PublicKey("3rad7aFPdJS3CkYPSphtDAWCNB8BYpV2yc7o5ZjFQbDb") // (Pause For's mainnet hot wallet)
-        val TEST_PKEY = byteArrayOf(237.toByte(),61,27,169.toByte(),183.toByte(),200.toByte(),219.toByte(),250.toByte(),32,89,115,224.toByte(),68,92,237.toByte(),44,34,53,36,147.toByte(),82,190.toByte(),225.toByte(),116,163.toByte(),215.toByte(),212.toByte(),255.toByte(),5,70,1,32,136.toByte(),85,123,196.toByte(),201.toByte(),2,233.toByte(),220.toByte(),145.toByte(),142.toByte(),168.toByte(),175.toByte(),71,28,86,110,99,89,47,93,20,8,35,15,158.toByte(),119,107,224.toByte(),63,207.toByte(),158.toByte(),97)
-        val TEST_ACCOUNT = KineticAccount(TEST_PKEY)
         val MEMO_V1_PROGRAM_ID = PublicKey("Memo1UhkJRfHyvLMcVucJwxXeuD728EqVDDwQDxFMNo")
     }
 
@@ -62,7 +60,7 @@ class Kinetic(filesDir: File, environment: String, appIndex: Int, endpoint: Stri
         this.environment = environment
         this.appIndex = appIndex
         this.appConfig = appConfig
-        network = OkHttpNetworkingRouter(RPCEndpoint.devnetSolana)
+        network = OkHttpNetworkingRouter(getSolanaRPCEndpoint(environment))
         storage = BasicAccountStorage(filesDir)
         solana = Solana(network)
         accountApi = AccountApi(endpoint)
@@ -187,6 +185,7 @@ class Kinetic(filesDir: File, environment: String, appIndex: Int, endpoint: Stri
     }
 
     fun submitPayment(
+        fromAccount: KineticAccount,
         toPublicKey: String,
         mint: AppConfigMint? = null,
         commitment: MakeTransferRequest.Commitment = MakeTransferRequest.Commitment.confirmed,
@@ -198,6 +197,7 @@ class Kinetic(filesDir: File, environment: String, appIndex: Int, endpoint: Stri
             val toPublicKey = PublicKey(toPublicKey)
             val recentBlockhash = transactionApi.getLatestBlockhash(environment, appIndex)
             val transaction = Transaction()
+            transaction.signatures = mutableListOf<SignaturePubkeyPair>(SignaturePubkeyPair(null, fromAccount.publicKey.solanaPublicKey))
 
             val kinMemo = KinBinaryMemo.Builder(124)
                 .setTransferType(KinBinaryMemo.TransferType.None)
@@ -210,26 +210,17 @@ class Kinetic(filesDir: File, environment: String, appIndex: Int, endpoint: Stri
             transaction.addInstruction(memoInstruction)
 
             val transferInstruction = TokenProgram.transferChecked(
-                TEST_ACCOUNT.solanaAccount.publicKey,
+                fromAccount.solanaAccount.publicKey,
                 toPublicKey.solanaPublicKey,
                 1,
                 (mint?.decimals ?: appConfig.mint.decimals).toByte(),
-                TEST_ACCOUNT.solanaAccount.publicKey,
+                fromAccount.solanaAccount.publicKey,
                 PublicKey(mint?.publicKey ?: appConfig.mint.publicKey).solanaPublicKey
             )
-//            val transferInstruction = TokenProgram.transfer(
-//                TEST_ACCOUNT.publicKey,
-////                storage.account().getOrThrow().publicKey,
-//                toPublicKey.solanaPublicKey,
-//                100,
-//                TEST_ACCOUNT.publicKey,
-////                storage.account().getOrThrow().publicKey
-//            )
             transaction.addInstruction(transferInstruction)
             transaction.setRecentBlockHash(recentBlockhash.blockhash)
             transaction.feePayer = PublicKey(mint?.feePayer ?: appConfig.mint.feePayer).solanaPublicKey
-//            transaction.partialSign(storage.account().getOrThrow())
-            transaction.partialSign(TEST_ACCOUNT.solanaAccount)
+            transaction.partialSign(fromAccount.solanaAccount)
 
             try {
                 val txBytes = transaction.serialize(SerializeConfig(requireAllSignatures = false, verifySignatures = false))

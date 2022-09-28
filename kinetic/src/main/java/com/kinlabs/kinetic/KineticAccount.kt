@@ -29,28 +29,28 @@ class KineticAccount {
             val newMnemonic = Wallet(networkParameters).keyChainSeed.mnemonicCode
             val seed = MnemonicCode.toSeed(newMnemonic, passphrase)
             val privateKey = solanaBip44.getPrivateKeyFromSeed(seed, DerivableType.BIP44)
-            keyPair = TweetNaclFast.Signature.keyPair_fromSeed(privateKey)
+            this.keyPair = TweetNaclFast.Signature.keyPair_fromSeed(privateKey)
             this.mnemonic = newMnemonic
             this.solanaAccount = HotAccount(keyPair.secretKey)
         } else {
             val seed = MnemonicCode.toSeed(mnemonic, passphrase)
             val privateKey = solanaBip44.getPrivateKeyFromSeed(seed, DerivableType.BIP44)
-            keyPair = TweetNaclFast.Signature.keyPair_fromSeed(privateKey)
+            this.keyPair = TweetNaclFast.Signature.keyPair_fromSeed(privateKey)
             this.mnemonic = mnemonic
             this.solanaAccount = HotAccount(keyPair.secretKey)
         }
     }
 
     constructor(secretKey: ByteArray) {
-        keyPair = TweetNaclFast.Signature.keyPair_fromSecretKey(secretKey)
+        this.keyPair = TweetNaclFast.Signature.keyPair_fromSecretKey(secretKey)
         this.solanaAccount = HotAccount(keyPair.secretKey)
     }
 
     constructor(json: String) {
         val account = Gson().fromJson(json, KineticAccount::class.java)
-        keyPair = account.keyPair
-        mnemonic = account.mnemonic
-        solanaAccount = HotAccount(keyPair.secretKey)
+        this.keyPair = account.keyPair
+        this.mnemonic = account.mnemonic
+        this.solanaAccount = HotAccount(keyPair.secretKey)
     }
 
     private constructor(keyPair: TweetNaclFast.Signature.KeyPair) {
@@ -58,8 +58,8 @@ class KineticAccount {
         this.solanaAccount = HotAccount(keyPair.secretKey)
     }
 
-    val publicKey: com.kinlabs.kinetic.PublicKey
-        get() = com.kinlabs.kinetic.PublicKey(keyPair.publicKey)
+    val publicKey: PublicKey
+        get() = PublicKey(keyPair.publicKey)
 
     val secretKey: ByteArray
         get() = keyPair.secretKey
