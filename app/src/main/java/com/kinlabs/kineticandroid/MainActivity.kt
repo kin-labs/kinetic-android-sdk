@@ -37,10 +37,10 @@ class MainActivity : AppCompatActivity() {
 
         Kinetic.Builder(
             filesDir,
-            "devnet",
+            "local",
             1,
-//                "http://10.0.2.2:3000"
-            "https://sandbox.kinetic.host"
+                "http://10.0.2.2:3000"
+//            "https://sandbox.kinetic.host"
         ).build { kinetic: Kinetic ->
             this.kinetic = kinetic
             kinetic.createAccountDirect {

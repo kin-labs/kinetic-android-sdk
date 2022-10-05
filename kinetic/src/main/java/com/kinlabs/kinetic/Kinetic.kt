@@ -14,6 +14,7 @@ import com.solana.programs.SystemProgram
 import com.solana.programs.TokenProgram
 import com.squareup.moshi.JsonClass
 import okhttp3.OkHttpClient
+import okio.ByteString.Companion.encode
 import org.bitcoinj.core.NetworkParameters
 import org.bitcoinj.wallet.Wallet
 import org.kinlabs.kinetic.*
@@ -198,12 +199,13 @@ class Kinetic(filesDir: File, environment: String, appIndex: Int, endpoint: Stri
             val kinMemo = KinBinaryMemo.Builder(124)
                 .setTransferType(KinBinaryMemo.TransferType.None)
                 .build()
+            val encodedMemo = Base64.encodeToString(kinMemo.encode(), 0).toByteArray()
             val memoInstruction = TransactionInstruction(
                 MEMO_V1_PROGRAM_ID.solanaPublicKey,
                 emptyList(),
-                kinMemo.encode()
+                encodedMemo
             )
-//            transaction.addInstruction(memoInstruction)
+            transaction.addInstruction(memoInstruction)
             val tokenAccount = com.solana.core.PublicKey.findProgramAddress(
                 listOf(
                     fromAccount.solanaAccount.publicKey.pubkey,
