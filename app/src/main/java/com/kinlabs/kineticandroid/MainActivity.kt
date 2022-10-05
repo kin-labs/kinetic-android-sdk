@@ -39,8 +39,8 @@ class MainActivity : AppCompatActivity() {
             filesDir,
             "devnet",
             1,
-                "http://10.0.2.2:3000"
-//            "https://staging.kinetic.host"
+//                "http://10.0.2.2:3000"
+            "https://sandbox.kinetic.host"
         ).build { kinetic: Kinetic ->
             this.kinetic = kinetic
             kinetic.createAccountDirect {
@@ -124,7 +124,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         submitPaymentButton.setOnClickListener {
-            kinetic.submitPayment(account, "3rad7aFPdJS3CkYPSphtDAWCNB8BYpV2yc7o5ZjFQbDb") {
+            kinetic.submitPayment(account, "BobQoPqWy5cpFioy1dMTYqNH9WpC39mkAEDJWXECoJ9y") {
 
             }
         }

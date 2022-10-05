@@ -3,7 +3,7 @@
  *
  * The OpenAPI definition of the Kinetic API
  *
- * The version of the OpenAPI document: 1.0.0-rc.0
+ * The version of the OpenAPI document: 1.0.0-rc.3
  * 
  *
  * Please note:
@@ -54,7 +54,7 @@ data class CreateAccountRequest (
     val mint: kotlin.String,
 
     @Json(name = "tx")
-    val tx: kotlin.ByteArray,
+    val tx: kotlin.String,
 
     @Json(name = "referenceId")
     val referenceId: kotlin.String? = null,

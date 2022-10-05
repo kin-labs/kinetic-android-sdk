@@ -9,7 +9,7 @@ Name | Type | Description | Notes
 **index** | **kotlin.Int** |  | 
 **mint** | **kotlin.String** |  | 
 **lastValidBlockHeight** | **kotlin.Int** |  | 
-**tx** | **kotlin.ByteArray** |  | 
+**tx** | **kotlin.String** |  | 
 **referenceId** | **kotlin.String** |  |  [optional]
 **referenceType** | **kotlin.String** |  |  [optional]
 

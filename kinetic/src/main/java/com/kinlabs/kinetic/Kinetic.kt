@@ -1,5 +1,6 @@
 package com.kinlabs.kinetic
 
+import android.util.Base64
 import android.util.Log
 import com.solana.Solana
 import com.solana.api.*
@@ -122,6 +123,7 @@ class Kinetic(filesDir: File, environment: String, appIndex: Int, endpoint: Stri
     ) {
         Thread {
             try {
+                val mint = mint ?: appConfig.mint
                 val recentBlockhash = transactionApi.getLatestBlockhash(environment, appIndex)
 
                 val tokenAccount = com.solana.core.PublicKey.findProgramAddress(
@@ -132,51 +134,44 @@ class Kinetic(filesDir: File, environment: String, appIndex: Int, endpoint: Stri
                     ), PublicKey("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL").solanaPublicKey
                 )
 
-                solana.api.getMinimumBalanceForRentExemption(REQUIRED_ACCOUNT_SPACE) {
-                    it.onSuccess { balance ->
-                        try {
-                            val transaction = Transaction()
-                            val createAccountInstruction = SystemProgram.createAccount(
-                                fromPublicKey = account.solanaAccount.publicKey,
-                                newAccountPublickey = tokenAccount.address,
-                                lamports = balance,
-                                REQUIRED_ACCOUNT_SPACE,
-                                TokenProgram.PROGRAM_ID
-                            )
-                            transaction.addInstruction(createAccountInstruction)
+                try {
+                    val transaction = Transaction()
+                    transaction.signatures = mutableListOf<SignaturePubkeyPair>(SignaturePubkeyPair(null, account.publicKey.solanaPublicKey))
+                    val createAccountInstruction = TransactionInstruction(
+                        PublicKey("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL").solanaPublicKey,
+                        listOf(
+                            AccountMeta(PublicKey(mint.feePayer).solanaPublicKey, true, true),
+                            AccountMeta(tokenAccount.address, false, true),
+                            AccountMeta(account.publicKey.solanaPublicKey, true, false),
+                            AccountMeta(PublicKey(mint.publicKey).solanaPublicKey, false, false),
+                            AccountMeta(SystemProgram.PROGRAM_ID, false, false),
+                            AccountMeta(TokenProgram.PROGRAM_ID, false, false),
+                            AccountMeta(TokenProgram.SYSVAR_RENT_PUBKEY, false, false)
+                        ),
+                        ByteArray(0)
+                    )
+                    transaction.add(createAccountInstruction)
+                    transaction.setRecentBlockHash(recentBlockhash.blockhash)
+                    transaction.feePayer = PublicKey(mint.feePayer).solanaPublicKey
+                    transaction.partialSign(account.solanaAccount)
 
-                            val initializeAccountInstruction = TokenProgram.initializeAccount(
-                                account = tokenAccount.address,
-                                mint = PublicKey(mint?.publicKey ?: appConfig.mint.publicKey).solanaPublicKey,
-                                owner = account.solanaAccount.publicKey
-                            )
-                            transaction.addInstruction(initializeAccountInstruction)
+                    val txBytes = transaction.serialize(SerializeConfig(requireAllSignatures = false, verifySignatures = false))
 
-                            transaction.setRecentBlockHash(recentBlockhash.blockhash)
-                            transaction.feePayer = PublicKey(mint?.feePayer ?: appConfig.mint.feePayer).solanaPublicKey
-                            transaction.partialSign(account.solanaAccount)
-
-                            val txBytes = transaction.serialize(SerializeConfig(requireAllSignatures = false, verifySignatures = false))
-
-                            val res = accountApi.createAccount(
-                                CreateAccountRequest(
-                                    commitment,
-                                    environment,
-                                    appIndex,
-                                    recentBlockhash.lastValidBlockHeight,
-                                    mint?.publicKey ?: appConfig.mint.publicKey,
-                                    txBytes,
-                                    referenceId,
-                                    referenceType
-                                )
-                            )
-                            Log.d("TAG", res.signature!!)
-                        } catch (e: Exception) {
-                            Log.d("TAG", e.localizedMessage)
-                        }
-                    }.onFailure {
-                        Log.d("TAG", it.localizedMessage)
-                    }
+                    val res = accountApi.createAccount(
+                        CreateAccountRequest(
+                            commitment,
+                            environment,
+                            appIndex,
+                            recentBlockhash.lastValidBlockHeight,
+                            mint.publicKey,
+                            Base64.encodeToString(txBytes, 0),
+                            referenceId,
+                            referenceType
+                        )
+                    )
+                    Log.d("TAG", res.toString())
+                } catch (e: Exception) {
+                    Log.d("TAG", e.localizedMessage)
                 }
             } catch (e: Exception) {
                 Log.d("TAG", e.localizedMessage)
@@ -195,6 +190,7 @@ class Kinetic(filesDir: File, environment: String, appIndex: Int, endpoint: Stri
     ) {
         Thread {
             val toPublicKey = PublicKey(toPublicKey)
+            val mint = mint ?: appConfig.mint
             val recentBlockhash = transactionApi.getLatestBlockhash(environment, appIndex)
             val transaction = Transaction()
             transaction.signatures = mutableListOf<SignaturePubkeyPair>(SignaturePubkeyPair(null, fromAccount.publicKey.solanaPublicKey))
@@ -207,19 +203,32 @@ class Kinetic(filesDir: File, environment: String, appIndex: Int, endpoint: Stri
                 emptyList(),
                 kinMemo.encode()
             )
-            transaction.addInstruction(memoInstruction)
-
+//            transaction.addInstruction(memoInstruction)
+            val tokenAccount = com.solana.core.PublicKey.findProgramAddress(
+                listOf(
+                    fromAccount.solanaAccount.publicKey.pubkey,
+                    PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA").solanaPublicKey.pubkey,
+                    PublicKey(appConfig.mint.publicKey).solanaPublicKey.pubkey
+                ), PublicKey("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL").solanaPublicKey
+            )
+            val destTokenAccount = com.solana.core.PublicKey.findProgramAddress(
+                listOf(
+                    toPublicKey.solanaPublicKey.pubkey,
+                    PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA").solanaPublicKey.pubkey,
+                PublicKey(mint.publicKey).solanaPublicKey.pubkey
+            ), PublicKey("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL").solanaPublicKey
+            )
             val transferInstruction = TokenProgram.transferChecked(
-                fromAccount.solanaAccount.publicKey,
-                toPublicKey.solanaPublicKey,
+                tokenAccount.address,
+                destTokenAccount.address,
                 1,
-                (mint?.decimals ?: appConfig.mint.decimals).toByte(),
+                (mint.decimals).toByte(),
                 fromAccount.solanaAccount.publicKey,
-                PublicKey(mint?.publicKey ?: appConfig.mint.publicKey).solanaPublicKey
+                PublicKey(mint.publicKey).solanaPublicKey
             )
             transaction.addInstruction(transferInstruction)
             transaction.setRecentBlockHash(recentBlockhash.blockhash)
-            transaction.feePayer = PublicKey(mint?.feePayer ?: appConfig.mint.feePayer).solanaPublicKey
+            transaction.feePayer = PublicKey(mint.feePayer).solanaPublicKey
             transaction.partialSign(fromAccount.solanaAccount)
 
             try {
@@ -228,9 +237,9 @@ class Kinetic(filesDir: File, environment: String, appIndex: Int, endpoint: Stri
                     commitment,
                     environment,
                     appIndex,
-                    mint?.publicKey ?: appConfig.mint.publicKey,
+                    mint.publicKey,
                     recentBlockhash.lastValidBlockHeight,
-                    txBytes,
+                    Base64.encodeToString(txBytes, 0),
                     referenceId,
                     referenceType
                 )
@@ -289,10 +298,4 @@ class Kinetic(filesDir: File, environment: String, appIndex: Int, endpoint: Stri
     ////
     // END: Direct to Solana functions, don't touch Kinetic backend
     ////
-
-    @JsonClass(generateAdapter = true)
-    class WireTX(
-        val type: String = "Buffer",
-        val data: ByteArray = byteArrayOf(),
-    ) : Borsh
 }
