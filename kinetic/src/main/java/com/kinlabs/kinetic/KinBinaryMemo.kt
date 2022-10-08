@@ -22,41 +22,41 @@ import kotlin.math.pow
 data class KinBinaryMemo internal constructor(
     val magicByteIndicator: Int,
     val version: Int,
-    val typeId: TransferType,
+    val typeId: TransactionType,
     val appIdx: Int,
     val foreignKey: String
 ) {
-    sealed class TransferType(val value: Int) {
+    sealed class TransactionType(val value: Int) {
         /**
          * An unclassified transfer of Kin.
          */
-        object Unknown : TransferType(-1)
+        object Unknown : TransactionType(-1)
 
         /**
          * When none of the other types are appropriate for the use case.
          */
-        object None : TransferType(0)
+        object None : TransactionType(0)
 
         /**
          * Use when transferring Kin to a user for some performed action.
          */
-        object Earn : TransferType(1)
+        object Earn : TransactionType(1)
 
         /**
          * Use when transferring Kin due to purchasing something.
          */
-        object Spend : TransferType(2)
+        object Spend : TransactionType(2)
 
         /**
          * Use when transferring Kin where it does not constitute an [Earn] or [Spend]
          */
-        object P2P : TransferType(3)
+        object P2P : TransactionType(3)
 
         /* Shouldn't be used. */
-        internal data class ANY internal constructor(val anyValue: Int) : TransferType(anyValue)
+        internal data class ANY internal constructor(val anyValue: Int) : TransactionType(anyValue)
 
         companion object {
-            fun fromValue(value: Int): TransferType =
+            fun fromValue(value: Int): TransactionType =
                 when (value) {
                     0 -> None
                     1 -> Earn
@@ -75,10 +75,10 @@ data class KinBinaryMemo internal constructor(
         data class KinBinaryMemoFormatException(override val message: String) :
             RuntimeException(message)
 
-        private var typeId: TransferType? = null
+        private var typeId: TransactionType? = null
         private var foreignKeyBytes: ByteArray? = null
 
-        fun setTransferType(typeId: TransferType): Builder =
+        fun setTransferType(typeId: TransactionType): Builder =
             also { this.typeId = typeId }
 
         fun setForeignKey(foreignKeyBytes: ByteArray): Builder =
@@ -177,7 +177,7 @@ data class KinBinaryMemo internal constructor(
             val magicByteIndicator =
                 this and MASK_MAGIC_BYTE_INDICATOR ushr BIT_OFFSET_MAGIC_BYTE_INDICATOR
             val version = this and MASK_VERSION ushr BIT_OFFSET_VERSION
-            val typeId = TransferType.fromValue(this and MASK_TYPE_ID ushr BIT_OFFSET_TYPE_ID)
+            val typeId = TransactionType.fromValue(this and MASK_TYPE_ID ushr BIT_OFFSET_TYPE_ID)
             val appIdx = this and MASK_APP_IDX ushr BIT_OFFSET_APP_IDX
 
             val foreignKey = ByteArray(29)

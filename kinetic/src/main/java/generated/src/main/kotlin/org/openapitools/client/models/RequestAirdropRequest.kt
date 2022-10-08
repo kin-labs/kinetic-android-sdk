@@ -20,6 +20,7 @@
 
 package org.openapitools.client.models
 
+import org.openapitools.client.models.Commitment
 
 import com.squareup.moshi.Json
 
@@ -40,7 +41,7 @@ data class RequestAirdropRequest (
     val account: kotlin.String,
 
     @Json(name = "commitment")
-    val commitment: RequestAirdropRequest.Commitment,
+    val commitment: Commitment,
 
     @Json(name = "environment")
     val environment: kotlin.String,
@@ -54,17 +55,5 @@ data class RequestAirdropRequest (
     @Json(name = "amount")
     val amount: kotlin.String? = null
 
-) {
-
-    /**
-     * 
-     *
-     * Values: confirmed,finalized,processed
-     */
-    enum class Commitment(val value: kotlin.String) {
-        @Json(name = "Confirmed") confirmed("Confirmed"),
-        @Json(name = "Finalized") finalized("Finalized"),
-        @Json(name = "Processed") processed("Processed");
-    }
-}
+)
 

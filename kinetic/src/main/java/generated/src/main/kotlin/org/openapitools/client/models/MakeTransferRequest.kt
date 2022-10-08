@@ -20,6 +20,7 @@
 
 package org.openapitools.client.models
 
+import org.openapitools.client.models.Commitment
 
 import com.squareup.moshi.Json
 
@@ -39,7 +40,7 @@ import com.squareup.moshi.Json
 data class MakeTransferRequest (
 
     @Json(name = "commitment")
-    val commitment: MakeTransferRequest.Commitment,
+    val commitment: Commitment,
 
     @Json(name = "environment")
     val environment: kotlin.String,
@@ -62,17 +63,5 @@ data class MakeTransferRequest (
     @Json(name = "referenceType")
     val referenceType: kotlin.String? = null
 
-) {
-
-    /**
-     * 
-     *
-     * Values: confirmed,finalized,processed
-     */
-    enum class Commitment(val value: kotlin.String) {
-        @Json(name = "Confirmed") confirmed("Confirmed"),
-        @Json(name = "Finalized") finalized("Finalized"),
-        @Json(name = "Processed") processed("Processed");
-    }
-}
+)
 

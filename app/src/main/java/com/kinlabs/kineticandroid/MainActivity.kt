@@ -2,13 +2,12 @@ package com.kinlabs.kineticandroid
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Base64
 import android.widget.Button
 import android.widget.TextView
-import com.kinlabs.kinetic.KinBinaryMemo
-import com.kinlabs.kinetic.Kinetic
-import com.kinlabs.kinetic.KineticAccount
-import com.kinlabs.kinetic.PublicKey
+import com.kinlabs.kinetic.Keypair
+import com.kinlabs.kinetic.KineticSdk
+import kotlinx.coroutines.*
+import org.openapitools.client.models.Commitment
 
 class MainActivity : AppCompatActivity() {
     private lateinit var getConfigButton: Button
@@ -23,29 +22,28 @@ class MainActivity : AppCompatActivity() {
     private lateinit var airdropText: TextView
     private lateinit var createAccountButton: Button
     private lateinit var createAccountText: TextView
-    private lateinit var submitPaymentButton: Button
-    private lateinit var paymentText: TextView
-    private lateinit var memoButton: Button
-    private lateinit var memoText: TextView
+    private lateinit var makeTransferButton: Button
+    private lateinit var makeTransferText: TextView
+    private lateinit var getTransactionButton: Button
+    private lateinit var transactionText: TextView
 
-    private lateinit var kinetic: Kinetic
-    private lateinit var account: KineticAccount
+    private var kinetic: KineticSdk? = null
+    private var account: Keypair? = null
+
+    private val kineticNetworkScope = CoroutineScope(Dispatchers.IO)
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        Kinetic.Builder(
-            filesDir,
-            "local",
-            1,
-                "http://10.0.2.2:3000"
-//            "https://sandbox.kinetic.host"
-        ).build { kinetic: Kinetic ->
-            this.kinetic = kinetic
-            kinetic.createAccountDirect {
-                account = it
-            }
+        kineticNetworkScope.launch {
+            kinetic = KineticSdk.setup(
+                "http://staging.kinetic.host",
+                "devnet",
+                index = 1
+            )
+            account = Keypair.random()
         }
 
         getConfigButton = findViewById(R.id.get_config_button)
@@ -60,82 +58,71 @@ class MainActivity : AppCompatActivity() {
         airdropText = findViewById(R.id.airdrop_text)
         createAccountButton = findViewById(R.id.create_account_button)
         createAccountText = findViewById(R.id.create_account_text)
-        submitPaymentButton = findViewById(R.id.submit_payment_button)
-        paymentText = findViewById(R.id.payment_text)
-        memoButton = findViewById(R.id.memo_button)
-        memoText = findViewById(R.id.memo_text)
+        makeTransferButton = findViewById(R.id.make_transfer_button)
+        makeTransferText = findViewById(R.id.make_transfer_text)
+        getTransactionButton = findViewById(R.id.get_transaction_button)
+        transactionText = findViewById(R.id.transaction_text)
 
         getConfigButton.setOnClickListener {
-            kinetic.getAppConfig { configSummary ->
-                runOnUiThread {
-                    serverConfigText.text = "Got it"// configSummary.toString()
-                }
+            kineticNetworkScope.launch {
+                val res = kinetic?.init()
+                runOnUiThread { serverConfigText.text = res.toString() }
             }
         }
 
         getBalanceButton.setOnClickListener {
-            kinetic.getBalance(account.publicKey.toBase58()) { balance ->
-                runOnUiThread {
-                    kinBalanceText.text = balance
-                }
+            kineticNetworkScope.launch {
+                val res = kinetic?.getBalance(account!!.publicKey)
+                runOnUiThread { kinBalanceText.text = res.toString() }
             }
-//            // Get SOL balance
-//            mogami.getSolBalance() { balance ->
-//                solBalanceText.text = balance.toString()
-//            }
-//            // Get KIN balance
-//            // TODO in fork: Make this return an empty array instead of crashing when there are no token accounts
-//            // TODO in fork: Make this return all token accounts when there's more than one :/
-//            mogami.getSPLBalance(Mogami.TOKEN_KIN) { balance ->
-//                kinBalanceText.text = balance
-//            }
         }
 
         getTokenAccountsButton.setOnClickListener {
-            kinetic.getTokenAccounts(account.publicKey.toBase58()) {
-                runOnUiThread {
-                    tokenAccountsText.text = it.toString()
-                }
+            kineticNetworkScope.launch {
+                val res = kinetic?.getTokenAccounts(account!!.publicKey)
+                runOnUiThread { tokenAccountsText.text = res.toString() }
             }
         }
 
         getAccountHistoryButton.setOnClickListener {
-            kinetic.getAccountHistory(account.publicKey.toBase58()) {
-                runOnUiThread {
-                    accountHistoryText.text = it.toString()
-                }
+            kineticNetworkScope.launch {
+                val res = kinetic?.getHistory(account!!.publicKey)
+                runOnUiThread { accountHistoryText.text = res.toString() }
             }
         }
 
         airdropButton.setOnClickListener {
-            kinetic.requestAirdrop(account.publicKey.toBase58(), 100) {
-                runOnUiThread {
-                    airdropText.text = it
-                }
+            kineticNetworkScope.launch {
+                val res = kinetic?.requestAirdrop(account!!.publicKey)
+                runOnUiThread { airdropText.text = res.toString() }
             }
         }
 
         createAccountButton.setOnClickListener {
-            kinetic.createAccount(account) { response ->
-                runOnUiThread {
-                    createAccountText.text = response.toString()
-                }
+            kineticNetworkScope.launch {
+                val res = kinetic?.createAccount(owner = account!!)
+                runOnUiThread { createAccountText.text = res.toString() }
             }
         }
 
-        submitPaymentButton.setOnClickListener {
-            kinetic.submitPayment(account, "BobQoPqWy5cpFioy1dMTYqNH9WpC39mkAEDJWXECoJ9y") {
-
+        makeTransferButton.setOnClickListener {
+            kineticNetworkScope.launch {
+                val res = kinetic?.makeTransfer(
+                    "1",
+                    Commitment.confirmed,
+                    "BobQoPqWy5cpFioy1dMTYqNH9WpC39mkAEDJWXECoJ9y",
+                    null,
+                    account!!
+                )
+                runOnUiThread { makeTransferText.text = res.toString() }
             }
         }
 
-        memoButton.setOnClickListener {
-            val memo = KinBinaryMemo.Builder(124)
-                .setTransferType(KinBinaryMemo.TransferType.P2P)
-                .build()
-
-            memoText.text =
-                memo.toString() + "\n\n" + Base64.encodeToString(memo.encode(), Base64.DEFAULT)
+        getTransactionButton.setOnClickListener {
+            kineticNetworkScope.launch {
+                val res = kinetic?.getTransaction("testTXsignature")
+                runOnUiThread { transactionText.text = res.toString() }
+            }
         }
     }
 }

@@ -61,6 +61,8 @@ Class | Method | HTTP request | Description
  - [org.openapitools.client.models.AppHealth](docs/AppHealth.md)
  - [org.openapitools.client.models.BalanceResponse](docs/BalanceResponse.md)
  - [org.openapitools.client.models.BalanceToken](docs/BalanceToken.md)
+ - [org.openapitools.client.models.ClusterType](docs/ClusterType.md)
+ - [org.openapitools.client.models.Commitment](docs/Commitment.md)
  - [org.openapitools.client.models.ConfirmedSignatureInfo](docs/ConfirmedSignatureInfo.md)
  - [org.openapitools.client.models.ConfirmedTransactionMeta](docs/ConfirmedTransactionMeta.md)
  - [org.openapitools.client.models.CreateAccountRequest](docs/CreateAccountRequest.md)
@@ -75,7 +77,9 @@ Class | Method | HTTP request | Description
  - [org.openapitools.client.models.Transaction](docs/Transaction.md)
  - [org.openapitools.client.models.TransactionData](docs/TransactionData.md)
  - [org.openapitools.client.models.TransactionError](docs/TransactionError.md)
+ - [org.openapitools.client.models.TransactionErrorType](docs/TransactionErrorType.md)
  - [org.openapitools.client.models.TransactionResponse](docs/TransactionResponse.md)
+ - [org.openapitools.client.models.TransactionStatus](docs/TransactionStatus.md)
 
 
 <a name="documentation-for-authorization"></a>

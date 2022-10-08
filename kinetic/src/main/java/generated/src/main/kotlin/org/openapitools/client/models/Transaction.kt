@@ -21,6 +21,7 @@
 package org.openapitools.client.models
 
 import org.openapitools.client.models.TransactionError
+import org.openapitools.client.models.TransactionStatus
 
 import com.squareup.moshi.Json
 
@@ -129,7 +130,7 @@ data class Transaction (
     val source: kotlin.String? = null,
 
     @Json(name = "status")
-    val status: Transaction.Status? = null,
+    val status: TransactionStatus? = null,
 
     @Json(name = "totalDuration")
     val totalDuration: java.math.BigDecimal? = null,
@@ -155,19 +156,5 @@ data class Transaction (
     @Json(name = "webhookVerifyDuration")
     val webhookVerifyDuration: java.math.BigDecimal? = null
 
-) {
-
-    /**
-     * 
-     *
-     * Values: committed,confirmed,failed,finalized,processing
-     */
-    enum class Status(val value: kotlin.String) {
-        @Json(name = "Committed") committed("Committed"),
-        @Json(name = "Confirmed") confirmed("Confirmed"),
-        @Json(name = "Failed") failed("Failed"),
-        @Json(name = "Finalized") finalized("Finalized"),
-        @Json(name = "Processing") processing("Processing");
-    }
-}
+)
 

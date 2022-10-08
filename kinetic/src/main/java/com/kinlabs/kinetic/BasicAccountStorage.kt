@@ -1,26 +1,24 @@
 package com.kinlabs.kinetic
 
 import android.util.Log
-import com.solana.core.HotAccount
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
-import java.util.*
 
 class BasicAccountStorage(filesDir: File) {
-    private var _account: KineticAccount? = null
+    private var _account: Keypair? = null
     private var _filesDir: String = filesDir.absolutePath + "/kinetic/"
 
-    fun account(): Result<KineticAccount> {
+    fun account(): Result<Keypair> {
         return if (_account != null) {
-            Log.d("TAG", "Account in mem: " + _account!!.publicKey.toBase58())
+            Log.d("TAG", "Account in mem: " + _account!!.publicKey)
             Result.success(_account!!)
         } else {
             val accounts = getAllAccounts()
             if (!accounts.isEmpty()) {
                 val accountJson = readFile(_filesDir, accounts[0] + ".key")
-                _account = KineticAccount(accountJson)
+                _account = Keypair(accountJson)
 //                Log.d("TAG", "Account in storage: " + _account!!.publicKey.toBase58())
                 Result.success(_account!!)
             } else {
@@ -35,8 +33,8 @@ class BasicAccountStorage(filesDir: File) {
         return Result.success(Unit)
     }
 
-    fun save(account: KineticAccount): Result<Unit> {
-        writeToFile(_filesDir, account.publicKey.toBase58() + ".key", account.toJson())
+    fun save(account: Keypair): Result<Unit> {
+        writeToFile(_filesDir, account.publicKey + ".key", account.toJson())
         _account = account
         return Result.success(Unit)
     }

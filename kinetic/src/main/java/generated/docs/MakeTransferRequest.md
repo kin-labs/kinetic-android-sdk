@@ -4,7 +4,7 @@
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**commitment** | [**inline**](#Commitment) |  | 
+**commitment** | [**Commitment**](Commitment.md) |  | 
 **environment** | **kotlin.String** |  | 
 **index** | **kotlin.Int** |  | 
 **mint** | **kotlin.String** |  | 
@@ -12,13 +12,6 @@ Name | Type | Description | Notes
 **tx** | **kotlin.String** |  | 
 **referenceId** | **kotlin.String** |  |  [optional]
 **referenceType** | **kotlin.String** |  |  [optional]
-
-
-<a name="Commitment"></a>
-## Enum: commitment
-Name | Value
----- | -----
-commitment | Confirmed, Finalized, Processed
 
 
 

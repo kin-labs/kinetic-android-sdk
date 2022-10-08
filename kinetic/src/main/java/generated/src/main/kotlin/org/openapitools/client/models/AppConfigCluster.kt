@@ -20,6 +20,7 @@
 
 package org.openapitools.client.models
 
+import org.openapitools.client.models.ClusterType
 
 import com.squareup.moshi.Json
 
@@ -44,20 +45,7 @@ data class AppConfigCluster (
     val name: kotlin.String,
 
     @Json(name = "type")
-    val type: AppConfigCluster.Type
+    val type: ClusterType
 
-) {
-
-    /**
-     * 
-     *
-     * Values: custom,solanaDevnet,solanaMainnet,solanaTestnet
-     */
-    enum class Type(val value: kotlin.String) {
-        @Json(name = "Custom") custom("Custom"),
-        @Json(name = "SolanaDevnet") solanaDevnet("SolanaDevnet"),
-        @Json(name = "SolanaMainnet") solanaMainnet("SolanaMainnet"),
-        @Json(name = "SolanaTestnet") solanaTestnet("SolanaTestnet");
-    }
-}
+)
 

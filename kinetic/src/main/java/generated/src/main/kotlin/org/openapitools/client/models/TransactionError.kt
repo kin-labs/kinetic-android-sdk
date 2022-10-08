@@ -20,6 +20,7 @@
 
 package org.openapitools.client.models
 
+import org.openapitools.client.models.TransactionErrorType
 
 import com.squareup.moshi.Json
 
@@ -45,25 +46,10 @@ data class TransactionError (
     val message: kotlin.String,
 
     @Json(name = "type")
-    val type: TransactionError.Type,
+    val type: TransactionErrorType,
 
     @Json(name = "instruction")
     val instruction: kotlin.Int
 
-) {
-
-    /**
-     * 
-     *
-     * Values: badNonce,invalidAccount,someError,timeout,unknown,webhookFailed
-     */
-    enum class Type(val value: kotlin.String) {
-        @Json(name = "BadNonce") badNonce("BadNonce"),
-        @Json(name = "InvalidAccount") invalidAccount("InvalidAccount"),
-        @Json(name = "SomeError") someError("SomeError"),
-        @Json(name = "Timeout") timeout("Timeout"),
-        @Json(name = "Unknown") unknown("Unknown"),
-        @Json(name = "WebhookFailed") webhookFailed("WebhookFailed");
-    }
-}
+)
 

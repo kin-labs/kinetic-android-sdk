@@ -12,6 +12,8 @@ docs/AppConfigMint.md
 docs/AppHealth.md
 docs/BalanceResponse.md
 docs/BalanceToken.md
+docs/ClusterType.md
+docs/Commitment.md
 docs/ConfirmedSignatureInfo.md
 docs/ConfirmedTransactionMeta.md
 docs/CreateAccountRequest.md
@@ -27,7 +29,9 @@ docs/Transaction.md
 docs/TransactionApi.md
 docs/TransactionData.md
 docs/TransactionError.md
+docs/TransactionErrorType.md
 docs/TransactionResponse.md
+docs/TransactionStatus.md
 gradle/wrapper/gradle-wrapper.jar
 gradle/wrapper/gradle-wrapper.properties
 gradlew
@@ -62,6 +66,8 @@ src/main/kotlin/org/openapitools/client/models/AppConfigMint.kt
 src/main/kotlin/org/openapitools/client/models/AppHealth.kt
 src/main/kotlin/org/openapitools/client/models/BalanceResponse.kt
 src/main/kotlin/org/openapitools/client/models/BalanceToken.kt
+src/main/kotlin/org/openapitools/client/models/ClusterType.kt
+src/main/kotlin/org/openapitools/client/models/Commitment.kt
 src/main/kotlin/org/openapitools/client/models/ConfirmedSignatureInfo.kt
 src/main/kotlin/org/openapitools/client/models/ConfirmedTransactionMeta.kt
 src/main/kotlin/org/openapitools/client/models/CreateAccountRequest.kt
@@ -76,4 +82,6 @@ src/main/kotlin/org/openapitools/client/models/SignatureStatus.kt
 src/main/kotlin/org/openapitools/client/models/Transaction.kt
 src/main/kotlin/org/openapitools/client/models/TransactionData.kt
 src/main/kotlin/org/openapitools/client/models/TransactionError.kt
+src/main/kotlin/org/openapitools/client/models/TransactionErrorType.kt
 src/main/kotlin/org/openapitools/client/models/TransactionResponse.kt
+src/main/kotlin/org/openapitools/client/models/TransactionStatus.kt

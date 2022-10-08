@@ -26,7 +26,7 @@ Name | Type | Description | Notes
 **solanaStart** | [**java.time.OffsetDateTime**](java.time.OffsetDateTime.md) |  |  [optional]
 **solanaTransaction** | [**kotlin.Any**](.md) |  |  [optional]
 **source** | **kotlin.String** |  |  [optional]
-**status** | [**inline**](#Status) |  |  [optional]
+**status** | [**TransactionStatus**](TransactionStatus.md) |  |  [optional]
 **totalDuration** | [**java.math.BigDecimal**](java.math.BigDecimal.md) |  |  [optional]
 **ua** | **kotlin.String** |  |  [optional]
 **webhookEventStart** | [**java.time.OffsetDateTime**](java.time.OffsetDateTime.md) |  |  [optional]
@@ -35,13 +35,6 @@ Name | Type | Description | Notes
 **webhookVerifyStart** | [**java.time.OffsetDateTime**](java.time.OffsetDateTime.md) |  |  [optional]
 **webhookVerifyEnd** | [**java.time.OffsetDateTime**](java.time.OffsetDateTime.md) |  |  [optional]
 **webhookVerifyDuration** | [**java.math.BigDecimal**](java.math.BigDecimal.md) |  |  [optional]
-
-
-<a name="Status"></a>
-## Enum: status
-Name | Value
----- | -----
-status | Committed, Confirmed, Failed, Finalized, Processing
 
 
 
