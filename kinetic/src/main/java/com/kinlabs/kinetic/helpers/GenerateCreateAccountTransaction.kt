@@ -3,6 +3,7 @@ package com.kinlabs.kinetic.helpers
 import android.util.Log
 import com.kinlabs.kinetic.KinBinaryMemo
 import com.solana.core.*
+import com.solana.programs.TokenProgram
 
 internal fun generateCreateAccountTransaction(
     addMemo: Boolean,
@@ -31,6 +32,12 @@ internal fun generateCreateAccountTransaction(
         ownerTokenAccount,
         ownerPublicKey,
         mintKey
+    )
+
+    instructions += createSetCloseAuthorityInstruction(
+        ownerTokenAccount,
+        ownerPublicKey,
+        feePayerKey
     )
 
     var transaction = Transaction()
