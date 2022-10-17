@@ -1,6 +1,7 @@
-package com.kinlabs.kinetic
+package com.kinlabs.kineticandroid
 
 import android.util.Log
+import com.kinlabs.kinetic.Keypair
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -10,20 +11,21 @@ class BasicAccountStorage(filesDir: File) {
     private var _account: Keypair? = null
     private var _filesDir: String = filesDir.absolutePath + "/kinetic/"
 
-    fun account(): Result<Keypair> {
+    fun account(): Keypair {
         return if (_account != null) {
-            Log.d("TAG", "Account in mem: " + _account!!.publicKey)
-            Result.success(_account!!)
+            Log.d(BasicAccountStorage::class.java.name, "Account in mem: " + _account!!.publicKey)
+            return _account!!
         } else {
             val accounts = getAllAccounts()
             if (!accounts.isEmpty()) {
                 val accountJson = readFile(_filesDir, accounts[0] + ".key")
-                _account = Keypair(accountJson)
-//                Log.d("TAG", "Account in storage: " + _account!!.publicKey.toBase58())
-                Result.success(_account!!)
+                _account = Keypair.fromJson(accountJson)
+                return _account!!
             } else {
-                Log.d("TAG", "No account stored")
-                Result.failure(Exception("No account stored"))
+                Log.d(BasicAccountStorage::class.java.name, "No account stored")
+                val account = Keypair.random()
+                save(account)
+                return account
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.kinlabs.kinetic
 
+import com.kinlabs.kinetic.helpers.getSolanaRPCEndpoint
 import com.solana.Solana
 import com.solana.networking.OkHttpNetworkingRouter
 import kotlinx.coroutines.async

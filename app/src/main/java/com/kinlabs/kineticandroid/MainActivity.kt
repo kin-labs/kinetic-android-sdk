@@ -31,6 +31,7 @@ class MainActivity : AppCompatActivity() {
 
     private var kinetic: KineticSdk? = null
     private var account: Keypair? = null
+    private var storage: BasicAccountStorage? = null
 
     private val kineticNetworkScope = CoroutineScope(Dispatchers.IO)
 
@@ -45,7 +46,9 @@ class MainActivity : AppCompatActivity() {
                 "devnet",
                 index = 1
             )
-            account = Keypair.random()
+            storage = BasicAccountStorage(filesDir)
+            account = storage!!.account()
+
             kinetic!!.logger.collect {
                 // Handle logs how you prefer here.
                 // Example: print each log from the Kin SDK to the console

@@ -106,14 +106,12 @@ class Keypair {
             val networkParameters = NetworkParameters.fromID("org.bitcoin.production")
             return Wallet(networkParameters).keyChainSeed.mnemonicCode!!
         }
-    }
 
-//    constructor(json: String) {
-//        val account = Gson().fromJson(json, Keypair::class.java)
-//        this.keyPair = account.keyPair
-//        this.mnemonic = account.mnemonic
-//        this.solanaKeypair = HotAccount(keyPair.secretKey)
-//    }
+        fun fromJson(json: String): Keypair {
+            val account = Gson().fromJson(json, Keypair::class.java)
+            return Keypair(account.secretKey!!)
+        }
+    }
 
 
     fun toJson(): String {

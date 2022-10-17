@@ -1,4 +1,4 @@
-package com.kinlabs.kinetic
+package com.kinlabs.kinetic.helpers
 
 import com.solana.networking.Network
 import com.solana.networking.RPCEndpoint
