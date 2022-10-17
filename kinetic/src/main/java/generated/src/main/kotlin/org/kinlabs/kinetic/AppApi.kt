@@ -18,7 +18,7 @@
     "UnusedImport"
 )
 
-package org.kinlabs.kinetic
+package org.kin.kinetic
 
 import org.openapitools.client.models.AppConfig
 import org.openapitools.client.models.AppHealth
@@ -33,7 +33,6 @@ import org.openapitools.client.infrastructure.RequestConfig
 import org.openapitools.client.infrastructure.RequestMethod
 import org.openapitools.client.infrastructure.ResponseType
 import org.openapitools.client.infrastructure.Success
-import org.openapitools.client.infrastructure.toMultiValue
 
 class AppApi(basePath: kotlin.String = defaultBasePath) : ApiClient(basePath) {
     companion object {

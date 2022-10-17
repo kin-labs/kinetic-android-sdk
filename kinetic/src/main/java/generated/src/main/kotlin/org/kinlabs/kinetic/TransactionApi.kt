@@ -18,7 +18,7 @@
     "UnusedImport"
 )
 
-package org.kinlabs.kinetic
+package org.kin.kinetic
 
 import org.openapitools.client.models.GetTransactionResponse
 import org.openapitools.client.models.LatestBlockhashResponse
@@ -36,7 +36,6 @@ import org.openapitools.client.infrastructure.RequestConfig
 import org.openapitools.client.infrastructure.RequestMethod
 import org.openapitools.client.infrastructure.ResponseType
 import org.openapitools.client.infrastructure.Success
-import org.openapitools.client.infrastructure.toMultiValue
 
 class TransactionApi(basePath: kotlin.String = defaultBasePath) : ApiClient(basePath) {
     companion object {

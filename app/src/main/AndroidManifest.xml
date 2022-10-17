@@ -17,7 +17,7 @@
         android:usesCleartextTraffic="true"
         android:theme="@style/Theme.KineticAndroid">
         <activity
-            android:name=".MainActivity"
+            android:name="org.kin.kineticdemo.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
