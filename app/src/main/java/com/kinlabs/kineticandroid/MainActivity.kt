@@ -2,10 +2,12 @@ package com.kinlabs.kineticandroid
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import com.kinlabs.kinetic.Keypair
 import com.kinlabs.kinetic.KineticSdk
+import com.kinlabs.kinetic.LogLevel
 import kotlinx.coroutines.*
 import org.openapitools.client.models.Commitment
 
@@ -44,6 +46,15 @@ class MainActivity : AppCompatActivity() {
                 index = 1
             )
             account = Keypair.random()
+            kinetic!!.logger.collect {
+                // Handle logs how you prefer here.
+                // Example: print each log from the Kin SDK to the console
+                if (it.first == LogLevel.ERROR) {
+                    Log.e("KinError", it.second)
+                } else {
+                    Log.d("KinLogs", it.second)
+                }
+            }
         }
 
         getConfigButton = findViewById(R.id.get_config_button)

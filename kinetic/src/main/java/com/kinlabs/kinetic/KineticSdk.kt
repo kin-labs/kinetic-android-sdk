@@ -3,9 +3,11 @@ package com.kinlabs.kinetic
 import com.solana.Solana
 import com.solana.networking.OkHttpNetworkingRouter
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import org.openapitools.client.models.*
 import java.util.*
-import java.util.logging.Logger
 
 class KineticSdk {
     var solana: Solana? = null
@@ -14,7 +16,7 @@ class KineticSdk {
     val environment: String
     val headers: Map<String, String>?
     val index: Int
-    val logger: Logger?
+    val logger: StateFlow<Pair<LogLevel, String>>
     val solanaRpcEndpoint: String?
 
     constructor(
@@ -22,21 +24,19 @@ class KineticSdk {
         environment: String,
         headers: Map<String, String> = emptyMap(),
         index: Int,
-        logger: Logger?,
         solanaRpcEndpoint: String?
     ) {
         this.internal = KineticSdkInternal(
             endpoint,
             environment,
             headers,
-            index,
-            logger
+            index
         )
         this.endpoint = endpoint
         this.environment = environment
         this.headers = headers
         this.index = index
-        this.logger = logger
+        this.logger = this.internal.logger.asStateFlow()
         this.solanaRpcEndpoint = solanaRpcEndpoint
     }
 
@@ -134,7 +134,6 @@ class KineticSdk {
             environment: String,
             headers: Map<String, String> = emptyMap<String, String>(),
             index: Int,
-            logger: Logger? = null,
             solanaRpcEndpoint: String? = null,
         ): KineticSdk {
             var sdk = KineticSdk(
@@ -142,7 +141,6 @@ class KineticSdk {
                 environment,
                 headers,
                 index,
-                logger,
                 solanaRpcEndpoint
             )
             sdk.init()

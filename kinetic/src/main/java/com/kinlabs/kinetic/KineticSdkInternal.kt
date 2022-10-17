@@ -13,37 +13,20 @@ import com.solana.programs.TokenProgram
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import org.kinlabs.kinetic.*
 import org.openapitools.client.models.*
 import java.io.File
-import java.util.logging.Logger
-
+import java.time.Instant
 
 class KineticSdkInternal(
     endpoint: String,
     environment: String,
     headers: Map<String, String>,
-    index: Int,
-    logger: Logger?
+    index: Int
 ) {
-//    data class Builder(
-//        val filesDir: File,
-//        val environment: String,
-//        val appIndex: Int,
-//        val endpoint: String
-//    ) {
-//        fun build(callback: (KineticSdkInternal) -> Unit) {
-//            val appApi = AppApi(endpoint)
-//            Thread {
-//                val appConfig = appApi.getAppConfig(environment, appIndex)
-//                callback(KineticSdkInternal(filesDir, environment, appIndex, endpoint, appConfig))
-//            }.start()
-//        }
-//    }
-
     companion object {
-        val SAMPLE_WALLET = PublicKey("3rad7aFPdJS3CkYPSphtDAWCNB8BYpV2yc7o5ZjFQbDb") // (Pause For's mainnet hot wallet)
         val MEMO_V1_PROGRAM_ID = PublicKey("Memo1UhkJRfHyvLMcVucJwxXeuD728EqVDDwQDxFMNo")
     }
 
@@ -58,17 +41,19 @@ class KineticSdkInternal(
     val transactionApi: TransactionApi
     val appApi: AppApi
     val dispatcher = Dispatchers.IO
+    val logger = MutableStateFlow(Pair(LogLevel.INFO, "Initializing logger"))
 
     init {
         this.endpoint = endpoint
         this.environment = environment
         this.index = index
 
-        // TODO: set headers here
         accountApi = AccountApi(endpoint)
         airdropApi = AirdropApi(endpoint)
         transactionApi = TransactionApi(endpoint)
         appApi = AppApi(endpoint)
+
+        log(LogLevel.INFO, "Initializing ${NAME}@${VERSION}\nendpoint: ${this.endpoint}, environment: ${this.environment}, index: ${this.index}")
     }
 
     suspend fun createAccount(
@@ -256,6 +241,10 @@ class KineticSdkInternal(
         if (appConfig.mints.find { mint -> mint.publicKey == destination } != null) {
             error("Cannot transfer to a mint address")
         }
+    }
+
+    private fun log(level: LogLevel, message: String) {
+        logger.update { Pair(level, "${NAME}::${Instant.now()}::${message}") }
     }
 
     ////
