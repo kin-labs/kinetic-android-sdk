@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.TextView
-import com.kinlabs.kineticandroid.R
 import org.kin.kinetic.Keypair
 import org.kin.kinetic.KineticSdk
 import org.kin.kinetic.LogLevel
@@ -45,7 +44,7 @@ class MainActivity : AppCompatActivity() {
             kinetic = KineticSdk.setup(
                 "http://staging.kinetic.host",
                 "devnet",
-                index = 1
+                1
             )
             storage = BasicAccountStorage(filesDir)
             account = storage!!.account()

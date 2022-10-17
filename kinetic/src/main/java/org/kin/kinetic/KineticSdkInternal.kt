@@ -14,8 +14,8 @@ import java.time.Instant
 class KineticSdkInternal(
     endpoint: String,
     environment: String,
+    index: Int,
     headers: Map<String, String>,
-    index: Int
 ) {
     companion object {
         val MEMO_V1_PROGRAM_ID = PublicKey("Memo1UhkJRfHyvLMcVucJwxXeuD728EqVDDwQDxFMNo")

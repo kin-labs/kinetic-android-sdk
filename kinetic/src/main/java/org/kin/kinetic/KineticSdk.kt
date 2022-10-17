@@ -12,28 +12,28 @@ class KineticSdk {
     private var internal: KineticSdkInternal
     val endpoint: String
     val environment: String
-    val headers: Map<String, String>?
     val index: Int
+    val headers: Map<String, String>?
     val logger: StateFlow<Pair<LogLevel, String>>
     val solanaRpcEndpoint: String?
 
     constructor(
         endpoint: String,
         environment: String,
-        headers: Map<String, String> = emptyMap(),
         index: Int,
+        headers: Map<String, String> = emptyMap(),
         solanaRpcEndpoint: String?
     ) {
         this.internal = KineticSdkInternal(
             endpoint,
             environment,
-            headers,
-            index
+            index,
+            headers
         )
         this.endpoint = endpoint
         this.environment = environment
-        this.headers = headers
         this.index = index
+        this.headers = headers
         this.logger = this.internal.logger.asStateFlow()
         this.solanaRpcEndpoint = solanaRpcEndpoint
     }
@@ -130,15 +130,15 @@ class KineticSdk {
         suspend fun setup(
             endpoint: String,
             environment: String,
-            headers: Map<String, String> = emptyMap<String, String>(),
             index: Int,
+            headers: Map<String, String> = emptyMap<String, String>(),
             solanaRpcEndpoint: String? = null,
         ): KineticSdk {
             var sdk = KineticSdk(
                 endpoint,
                 environment,
-                headers,
                 index,
+                headers,
                 solanaRpcEndpoint
             )
             sdk.init()
