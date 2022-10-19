@@ -29,7 +29,7 @@ import java.time.OffsetTime
 import java.util.Locale
 import com.squareup.moshi.adapter
 
-open class ApiClient(val baseUrl: String, val client: OkHttpClient = defaultClient) {
+open class ApiClient(val baseUrl: String, val client: OkHttpClient = defaultClient, val headers: MutableMap<String, String> = mutableMapOf()) {
     companion object {
         protected const val ContentType = "Content-Type"
         protected const val Accept = "Accept"
@@ -158,24 +158,27 @@ open class ApiClient(val baseUrl: String, val client: OkHttpClient = defaultClie
             }.build()
 
         // take content-type/accept from spec or set to default (application/json) if not defined
-        if (requestConfig.headers[ContentType].isNullOrEmpty()) {
+        if (requestConfig.body != null && requestConfig.headers[ContentType].isNullOrEmpty()) {
             requestConfig.headers[ContentType] = JsonMediaType
         }
         if (requestConfig.headers[Accept].isNullOrEmpty()) {
             requestConfig.headers[Accept] = JsonMediaType
         }
+
+        requestConfig.headers += headers
+
         val headers = requestConfig.headers
 
-        if(headers[ContentType].isNullOrEmpty()) {
-            throw kotlin.IllegalStateException("Missing Content-Type header. This is required.")
-        }
-
-        if(headers[Accept].isNullOrEmpty()) {
+        if (headers[Accept].isNullOrEmpty()) {
             throw kotlin.IllegalStateException("Missing Accept header. This is required.")
         }
 
-        // TODO: support multiple contentType options here.
-        val contentType = (headers[ContentType] as String).substringBefore(";").lowercase(Locale.getDefault())
+        val contentType = if (headers[ContentType] != null) {
+            // TODO: support multiple contentType options here.
+            (headers[ContentType] as String).substringBefore(";").lowercase(Locale.getDefault())
+        } else {
+            null
+        }
 
         val request = when (requestConfig.method) {
             RequestMethod.DELETE -> Request.Builder().url(url).delete(requestBody(requestConfig.body, contentType))

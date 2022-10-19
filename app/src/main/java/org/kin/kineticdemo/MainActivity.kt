@@ -42,9 +42,10 @@ class MainActivity : AppCompatActivity() {
 
         kineticNetworkScope.launch {
             kinetic = KineticSdk.setup(
-                "http://staging.kinetic.host",
-                "devnet",
-                1
+                endpoint = "https://sandbox.kinetic.host",
+                environment = "devnet",
+                index = 1,
+                headers = mapOf("kinetic-custom-header" to "Yay nice!"),
             )
             storage = BasicAccountStorage(filesDir)
             account = storage!!.account()

@@ -44,12 +44,12 @@ class KineticSdkInternal(
         apiHeaders += headers
         apiHeaders.put("kinetic-environment", environment)
         apiHeaders.put("kinetic-index", index.toString())
-        apiHeaders.put("kinetic-user-agent", "Kinetic Android SDK v0.0.1-rc.1")
+        apiHeaders.put("kinetic-user-agent", "Kinetic Android SDK v1.0.0-rc.3")
 
-        accountApi = AccountApi(endpoint, apiHeaders)
-        airdropApi = AirdropApi(endpoint, apiHeaders)
-        transactionApi = TransactionApi(endpoint, apiHeaders)
-        appApi = AppApi(endpoint, apiHeaders)
+        accountApi = AccountApi(basePath = endpoint, headers = apiHeaders)
+        airdropApi = AirdropApi(basePath = endpoint, headers = apiHeaders)
+        transactionApi = TransactionApi(basePath = endpoint, headers = apiHeaders)
+        appApi = AppApi(basePath = endpoint, headers = apiHeaders)
 
         log(LogLevel.INFO, "Initializing $NAME@$VERSION\nendpoint: ${this.endpoint}, environment: ${this.environment}, index: ${this.index}")
     }

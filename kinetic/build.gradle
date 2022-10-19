@@ -62,6 +62,7 @@ openApiGenerate {
     inputSpec = "$rootDir/api-swagger.json".toString()
     outputDir = "$rootDir/kinetic/src/main/java/generated".toString()
     apiPackage = "org.kin.kinetic.generated"
+    templateDir = "$rootDir/.openapi-generator/templates/kotlin-client"
     configOptions = [
             dateLibrary: "java8",
     ]
