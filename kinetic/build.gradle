@@ -3,6 +3,7 @@ plugins {
     id 'kotlin-android'
     id "org.openapi.generator" version "6.2.0"
     id 'maven-publish'
+    id 'de.undercouch.download'
 }
 
 android {
@@ -57,7 +58,14 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.6'
 }
 
-openApiGenerate {
+
+task downloadApiSwagger(type: Download) {
+    src "https://raw.githubusercontent.com/kin-labs/kinetic/dev/api-swagger.json"
+    dest "$rootDir/api-swagger.json"
+}
+
+task generate(type: org.openapitools.generator.gradle.plugin.tasks.GenerateTask) {
+    dependsOn(downloadApiSwagger)
     generatorName = "kotlin"
     inputSpec = "$rootDir/api-swagger.json".toString()
     outputDir = "$rootDir/kinetic/src/main/java/generated".toString()
