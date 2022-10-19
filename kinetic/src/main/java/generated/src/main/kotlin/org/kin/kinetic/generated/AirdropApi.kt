@@ -18,47 +18,54 @@
     "UnusedImport"
 )
 
-package org.kin.kinetic
+package org.kin.kinetic.generated
+
+import java.io.IOException
+import okhttp3.OkHttpClient
+import okhttp3.HttpUrl
 
 import org.openapitools.client.models.RequestAirdropRequest
 import org.openapitools.client.models.RequestAirdropResponse
 
+import com.squareup.moshi.Json
+
 import org.openapitools.client.infrastructure.ApiClient
+import org.openapitools.client.infrastructure.ApiResponse
 import org.openapitools.client.infrastructure.ClientException
 import org.openapitools.client.infrastructure.ClientError
 import org.openapitools.client.infrastructure.ServerException
 import org.openapitools.client.infrastructure.ServerError
 import org.openapitools.client.infrastructure.MultiValueMap
+import org.openapitools.client.infrastructure.PartConfig
 import org.openapitools.client.infrastructure.RequestConfig
 import org.openapitools.client.infrastructure.RequestMethod
 import org.openapitools.client.infrastructure.ResponseType
 import org.openapitools.client.infrastructure.Success
+import org.openapitools.client.infrastructure.toMultiValue
 
-class AirdropApi(basePath: kotlin.String = defaultBasePath, headers: MutableMap<String, String>) : ApiClient(basePath, headers) {
+class AirdropApi(basePath: kotlin.String = defaultBasePath, client: OkHttpClient = ApiClient.defaultClient) : ApiClient(basePath, client) {
     companion object {
         @JvmStatic
         val defaultBasePath: String by lazy {
-            System.getProperties().getProperty("org.openapitools.client.baseUrl", "http://localhost:3000")
+            System.getProperties().getProperty(ApiClient.baseUrlKey, "http://localhost:3000")
         }
     }
 
     /**
-    * 
-    * 
-    * @param requestAirdropRequest  
-    * @return RequestAirdropResponse
-    * @throws UnsupportedOperationException If the API returns an informational or redirection response
-    * @throws ClientException If the API returns a client error response
-    * @throws ServerException If the API returns a server error response
-    */
+     * 
+     * 
+     * @param requestAirdropRequest 
+     * @return RequestAirdropResponse
+     * @throws IllegalStateException If the request is not correctly configured
+     * @throws IOException Rethrows the OkHttp execute method exception
+     * @throws UnsupportedOperationException If the API returns an informational or redirection response
+     * @throws ClientException If the API returns a client error response
+     * @throws ServerException If the API returns a server error response
+     */
     @Suppress("UNCHECKED_CAST")
-    @Throws(UnsupportedOperationException::class, ClientException::class, ServerException::class)
+    @Throws(IllegalStateException::class, IOException::class, UnsupportedOperationException::class, ClientException::class, ServerException::class)
     fun requestAirdrop(requestAirdropRequest: RequestAirdropRequest) : RequestAirdropResponse {
-        val localVariableConfig = requestAirdropRequestConfig(requestAirdropRequest = requestAirdropRequest)
-
-        val localVarResponse = request<RequestAirdropRequest, RequestAirdropResponse>(
-            localVariableConfig
-        )
+        val localVarResponse = requestAirdropWithHttpInfo(requestAirdropRequest = requestAirdropRequest)
 
         return when (localVarResponse.responseType) {
             ResponseType.Success -> (localVarResponse as Success<*>).data as RequestAirdropResponse
@@ -76,15 +83,35 @@ class AirdropApi(basePath: kotlin.String = defaultBasePath, headers: MutableMap<
     }
 
     /**
-    * To obtain the request config of the operation requestAirdrop
-    *
-    * @param requestAirdropRequest  
-    * @return RequestConfig
-    */
+     * 
+     * 
+     * @param requestAirdropRequest 
+     * @return ApiResponse<RequestAirdropResponse?>
+     * @throws IllegalStateException If the request is not correctly configured
+     * @throws IOException Rethrows the OkHttp execute method exception
+     */
+    @Suppress("UNCHECKED_CAST")
+    @Throws(IllegalStateException::class, IOException::class)
+    fun requestAirdropWithHttpInfo(requestAirdropRequest: RequestAirdropRequest) : ApiResponse<RequestAirdropResponse?> {
+        val localVariableConfig = requestAirdropRequestConfig(requestAirdropRequest = requestAirdropRequest)
+
+        return request<RequestAirdropRequest, RequestAirdropResponse>(
+            localVariableConfig
+        )
+    }
+
+    /**
+     * To obtain the request config of the operation requestAirdrop
+     *
+     * @param requestAirdropRequest 
+     * @return RequestConfig
+     */
     fun requestAirdropRequestConfig(requestAirdropRequest: RequestAirdropRequest) : RequestConfig<RequestAirdropRequest> {
         val localVariableBody = requestAirdropRequest
         val localVariableQuery: MultiValueMap = mutableMapOf()
         val localVariableHeaders: MutableMap<String, String> = mutableMapOf()
+        localVariableHeaders["Content-Type"] = "application/json"
+        localVariableHeaders["Accept"] = "application/json"
 
         return RequestConfig(
             method = RequestMethod.POST,
@@ -95,4 +122,7 @@ class AirdropApi(basePath: kotlin.String = defaultBasePath, headers: MutableMap<
         )
     }
 
+
+    private fun encodeURIComponent(uriComponent: kotlin.String): kotlin.String =
+        HttpUrl.Builder().scheme("http").host("localhost").addPathSegment(uriComponent).build().encodedPathSegments[0]
 }

@@ -52,6 +52,7 @@ import com.squareup.moshi.Json
  * @param source 
  * @param status 
  * @param totalDuration 
+ * @param tx 
  * @param ua 
  * @param webhookEventStart 
  * @param webhookEventEnd 
@@ -134,6 +135,9 @@ data class Transaction (
 
     @Json(name = "totalDuration")
     val totalDuration: java.math.BigDecimal? = null,
+
+    @Json(name = "tx")
+    val tx: kotlin.String? = null,
 
     @Json(name = "ua")
     val ua: kotlin.String? = null,

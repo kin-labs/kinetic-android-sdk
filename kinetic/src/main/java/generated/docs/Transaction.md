@@ -28,6 +28,7 @@ Name | Type | Description | Notes
 **source** | **kotlin.String** |  |  [optional]
 **status** | [**TransactionStatus**](TransactionStatus.md) |  |  [optional]
 **totalDuration** | [**java.math.BigDecimal**](java.math.BigDecimal.md) |  |  [optional]
+**tx** | **kotlin.String** |  |  [optional]
 **ua** | **kotlin.String** |  |  [optional]
 **webhookEventStart** | [**java.time.OffsetDateTime**](java.time.OffsetDateTime.md) |  |  [optional]
 **webhookEventEnd** | [**java.time.OffsetDateTime**](java.time.OffsetDateTime.md) |  |  [optional]

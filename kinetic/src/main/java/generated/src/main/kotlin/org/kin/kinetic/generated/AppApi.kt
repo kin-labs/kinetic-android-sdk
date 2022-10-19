@@ -18,48 +18,55 @@
     "UnusedImport"
 )
 
-package org.kin.kinetic
+package org.kin.kinetic.generated
+
+import java.io.IOException
+import okhttp3.OkHttpClient
+import okhttp3.HttpUrl
 
 import org.openapitools.client.models.AppConfig
 import org.openapitools.client.models.AppHealth
 
+import com.squareup.moshi.Json
+
 import org.openapitools.client.infrastructure.ApiClient
+import org.openapitools.client.infrastructure.ApiResponse
 import org.openapitools.client.infrastructure.ClientException
 import org.openapitools.client.infrastructure.ClientError
 import org.openapitools.client.infrastructure.ServerException
 import org.openapitools.client.infrastructure.ServerError
 import org.openapitools.client.infrastructure.MultiValueMap
+import org.openapitools.client.infrastructure.PartConfig
 import org.openapitools.client.infrastructure.RequestConfig
 import org.openapitools.client.infrastructure.RequestMethod
 import org.openapitools.client.infrastructure.ResponseType
 import org.openapitools.client.infrastructure.Success
+import org.openapitools.client.infrastructure.toMultiValue
 
-class AppApi(basePath: kotlin.String = defaultBasePath, headers: MutableMap<String, String>) : ApiClient(basePath, headers) {
+class AppApi(basePath: kotlin.String = defaultBasePath, client: OkHttpClient = ApiClient.defaultClient) : ApiClient(basePath, client) {
     companion object {
         @JvmStatic
         val defaultBasePath: String by lazy {
-            System.getProperties().getProperty("org.openapitools.client.baseUrl", "http://localhost:3000")
+            System.getProperties().getProperty(ApiClient.baseUrlKey, "http://localhost:3000")
         }
     }
 
     /**
-    * 
-    * 
-    * @param environment  
-    * @param index  
-    * @return AppConfig
-    * @throws UnsupportedOperationException If the API returns an informational or redirection response
-    * @throws ClientException If the API returns a client error response
-    * @throws ServerException If the API returns a server error response
-    */
+     * 
+     * 
+     * @param environment 
+     * @param index 
+     * @return AppConfig
+     * @throws IllegalStateException If the request is not correctly configured
+     * @throws IOException Rethrows the OkHttp execute method exception
+     * @throws UnsupportedOperationException If the API returns an informational or redirection response
+     * @throws ClientException If the API returns a client error response
+     * @throws ServerException If the API returns a server error response
+     */
     @Suppress("UNCHECKED_CAST")
-    @Throws(UnsupportedOperationException::class, ClientException::class, ServerException::class)
+    @Throws(IllegalStateException::class, IOException::class, UnsupportedOperationException::class, ClientException::class, ServerException::class)
     fun getAppConfig(environment: kotlin.String, index: kotlin.Int) : AppConfig {
-        val localVariableConfig = getAppConfigRequestConfig(environment = environment, index = index)
-
-        val localVarResponse = request<Unit, AppConfig>(
-            localVariableConfig
-        )
+        val localVarResponse = getAppConfigWithHttpInfo(environment = environment, index = index)
 
         return when (localVarResponse.responseType) {
             ResponseType.Success -> (localVarResponse as Success<*>).data as AppConfig
@@ -77,20 +84,40 @@ class AppApi(basePath: kotlin.String = defaultBasePath, headers: MutableMap<Stri
     }
 
     /**
-    * To obtain the request config of the operation getAppConfig
-    *
-    * @param environment  
-    * @param index  
-    * @return RequestConfig
-    */
+     * 
+     * 
+     * @param environment 
+     * @param index 
+     * @return ApiResponse<AppConfig?>
+     * @throws IllegalStateException If the request is not correctly configured
+     * @throws IOException Rethrows the OkHttp execute method exception
+     */
+    @Suppress("UNCHECKED_CAST")
+    @Throws(IllegalStateException::class, IOException::class)
+    fun getAppConfigWithHttpInfo(environment: kotlin.String, index: kotlin.Int) : ApiResponse<AppConfig?> {
+        val localVariableConfig = getAppConfigRequestConfig(environment = environment, index = index)
+
+        return request<Unit, AppConfig>(
+            localVariableConfig
+        )
+    }
+
+    /**
+     * To obtain the request config of the operation getAppConfig
+     *
+     * @param environment 
+     * @param index 
+     * @return RequestConfig
+     */
     fun getAppConfigRequestConfig(environment: kotlin.String, index: kotlin.Int) : RequestConfig<Unit> {
         val localVariableBody = null
         val localVariableQuery: MultiValueMap = mutableMapOf()
         val localVariableHeaders: MutableMap<String, String> = mutableMapOf()
+        localVariableHeaders["Accept"] = "application/json"
 
         return RequestConfig(
             method = RequestMethod.GET,
-            path = "/api/app/{environment}/{index}/config".replace("{"+"environment"+"}", "$environment").replace("{"+"index"+"}", "$index"),
+            path = "/api/app/{environment}/{index}/config".replace("{"+"environment"+"}", encodeURIComponent(environment.toString())).replace("{"+"index"+"}", encodeURIComponent(index.toString())),
             query = localVariableQuery,
             headers = localVariableHeaders,
             body = localVariableBody
@@ -98,23 +125,21 @@ class AppApi(basePath: kotlin.String = defaultBasePath, headers: MutableMap<Stri
     }
 
     /**
-    * 
-    * 
-    * @param environment  
-    * @param index  
-    * @return AppHealth
-    * @throws UnsupportedOperationException If the API returns an informational or redirection response
-    * @throws ClientException If the API returns a client error response
-    * @throws ServerException If the API returns a server error response
-    */
+     * 
+     * 
+     * @param environment 
+     * @param index 
+     * @return AppHealth
+     * @throws IllegalStateException If the request is not correctly configured
+     * @throws IOException Rethrows the OkHttp execute method exception
+     * @throws UnsupportedOperationException If the API returns an informational or redirection response
+     * @throws ClientException If the API returns a client error response
+     * @throws ServerException If the API returns a server error response
+     */
     @Suppress("UNCHECKED_CAST")
-    @Throws(UnsupportedOperationException::class, ClientException::class, ServerException::class)
+    @Throws(IllegalStateException::class, IOException::class, UnsupportedOperationException::class, ClientException::class, ServerException::class)
     fun getAppHealth(environment: kotlin.String, index: kotlin.Int) : AppHealth {
-        val localVariableConfig = getAppHealthRequestConfig(environment = environment, index = index)
-
-        val localVarResponse = request<Unit, AppHealth>(
-            localVariableConfig
-        )
+        val localVarResponse = getAppHealthWithHttpInfo(environment = environment, index = index)
 
         return when (localVarResponse.responseType) {
             ResponseType.Success -> (localVarResponse as Success<*>).data as AppHealth
@@ -132,24 +157,47 @@ class AppApi(basePath: kotlin.String = defaultBasePath, headers: MutableMap<Stri
     }
 
     /**
-    * To obtain the request config of the operation getAppHealth
-    *
-    * @param environment  
-    * @param index  
-    * @return RequestConfig
-    */
+     * 
+     * 
+     * @param environment 
+     * @param index 
+     * @return ApiResponse<AppHealth?>
+     * @throws IllegalStateException If the request is not correctly configured
+     * @throws IOException Rethrows the OkHttp execute method exception
+     */
+    @Suppress("UNCHECKED_CAST")
+    @Throws(IllegalStateException::class, IOException::class)
+    fun getAppHealthWithHttpInfo(environment: kotlin.String, index: kotlin.Int) : ApiResponse<AppHealth?> {
+        val localVariableConfig = getAppHealthRequestConfig(environment = environment, index = index)
+
+        return request<Unit, AppHealth>(
+            localVariableConfig
+        )
+    }
+
+    /**
+     * To obtain the request config of the operation getAppHealth
+     *
+     * @param environment 
+     * @param index 
+     * @return RequestConfig
+     */
     fun getAppHealthRequestConfig(environment: kotlin.String, index: kotlin.Int) : RequestConfig<Unit> {
         val localVariableBody = null
         val localVariableQuery: MultiValueMap = mutableMapOf()
         val localVariableHeaders: MutableMap<String, String> = mutableMapOf()
+        localVariableHeaders["Accept"] = "application/json"
 
         return RequestConfig(
             method = RequestMethod.GET,
-            path = "/api/app/{environment}/{index}/health".replace("{"+"environment"+"}", "$environment").replace("{"+"index"+"}", "$index"),
+            path = "/api/app/{environment}/{index}/health".replace("{"+"environment"+"}", encodeURIComponent(environment.toString())).replace("{"+"index"+"}", encodeURIComponent(index.toString())),
             query = localVariableQuery,
             headers = localVariableHeaders,
             body = localVariableBody
         )
     }
 
+
+    private fun encodeURIComponent(uriComponent: kotlin.String): kotlin.String =
+        HttpUrl.Builder().scheme("http").host("localhost").addPathSegment(uriComponent).build().encodedPathSegments[0]
 }

@@ -8,6 +8,7 @@ import com.solana.core.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
+import org.kin.kinetic.generated.*
 import org.openapitools.client.models.*
 import java.time.Instant
 
