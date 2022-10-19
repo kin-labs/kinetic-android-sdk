@@ -37,7 +37,7 @@ import org.openapitools.client.infrastructure.RequestMethod
 import org.openapitools.client.infrastructure.ResponseType
 import org.openapitools.client.infrastructure.Success
 
-class TransactionApi(basePath: kotlin.String = defaultBasePath) : ApiClient(basePath) {
+class TransactionApi(basePath: kotlin.String = defaultBasePath, headers: MutableMap<String, String>) : ApiClient(basePath, headers) {
     companion object {
         @JvmStatic
         val defaultBasePath: String by lazy {

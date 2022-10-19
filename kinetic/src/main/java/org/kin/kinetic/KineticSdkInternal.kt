@@ -39,10 +39,16 @@ class KineticSdkInternal(
         this.environment = environment
         this.index = index
 
-        accountApi = AccountApi(endpoint)
-        airdropApi = AirdropApi(endpoint)
-        transactionApi = TransactionApi(endpoint)
-        appApi = AppApi(endpoint)
+        val apiHeaders: MutableMap<String, String> = mutableMapOf()
+        apiHeaders += headers
+        apiHeaders.put("kinetic-environment", environment)
+        apiHeaders.put("kinetic-index", index.toString())
+        apiHeaders.put("kinetic-user-agent", "Kinetic Android SDK v0.0.1-rc.1")
+
+        accountApi = AccountApi(endpoint, apiHeaders)
+        airdropApi = AirdropApi(endpoint, apiHeaders)
+        transactionApi = TransactionApi(endpoint, apiHeaders)
+        appApi = AppApi(endpoint, apiHeaders)
 
         log(LogLevel.INFO, "Initializing $NAME@$VERSION\nendpoint: ${this.endpoint}, environment: ${this.environment}, index: ${this.index}")
     }
