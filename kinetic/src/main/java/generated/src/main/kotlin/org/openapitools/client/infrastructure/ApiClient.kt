@@ -30,7 +30,7 @@ import java.util.Locale
 import com.squareup.moshi.adapter
 import java.util.concurrent.TimeUnit
 
-open class ApiClient(val baseUrl: String) {
+open class ApiClient(val baseUrl: String, val headers: MutableMap<String, String>) {
     companion object {
         protected const val ContentType = "Content-Type"
         protected const val Accept = "Accept"
@@ -169,6 +169,9 @@ open class ApiClient(val baseUrl: String) {
         if (requestConfig.headers[Accept].isNullOrEmpty()) {
             requestConfig.headers[Accept] = JsonMediaType
         }
+
+        requestConfig.headers += headers
+
         val headers = requestConfig.headers
 
         if(headers[ContentType] ?: "" == "") {
