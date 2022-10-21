@@ -13,6 +13,9 @@ android {
     defaultConfig {
         minSdk 27
         targetSdk 33
+        aarMetadata {
+            minCompileSdk = 27
+        }
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -33,7 +36,7 @@ android {
     }
 
     publishing {
-        singleVariant("release") {
+        singleVariant('release') {
             withSourcesJar()
         }
     }
@@ -78,7 +81,7 @@ sourceSets {
 
 publishing {
     publications {
-        maven(MavenPublication) {
+        release(MavenPublication) {
             groupId = "org.kin"
             artifactId = "kinetic"
             version = "1.0.0-rc.3"

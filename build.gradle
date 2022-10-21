@@ -1,4 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+group = 'org.kin'
+version = '1.0.0-rc.3'
+
 buildscript {
     repositories {
         google()
