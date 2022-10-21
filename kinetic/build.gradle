@@ -5,6 +5,9 @@ plugins {
     id 'maven-publish'
 }
 
+group = 'com.github.kin-labs'
+version = '1.0.0-rc.3'
+
 android {
     namespace = "org.kin.kinetic"
 
@@ -82,7 +85,7 @@ sourceSets {
 publishing {
     publications {
         release(MavenPublication) {
-            groupId = "org.kin"
+            groupId = "com.github.kin-labs"
             artifactId = "kinetic"
             version = "1.0.0-rc.3"
 
