@@ -11,14 +11,14 @@ version = '1.0.0-rc.3'
 android {
     namespace = "org.kin.kinetic"
 
-    compileSdk 33
+    compileSdkVersion 33
+    buildToolsVersion '30.0.2'
 
     defaultConfig {
-        minSdk 27
-        targetSdk 33
-        aarMetadata {
-            minCompileSdk = 27
-        }
+        minSdkVersion 27
+        targetSdkVersion 33
+        versionCode 1
+        versionName "1.0.0-rc.3"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -38,11 +38,11 @@ android {
         jvmTarget = '11'
     }
 
-    publishing {
-        singleVariant('release') {
-            withSourcesJar()
-        }
-    }
+//    publishing {
+//        singleVariant('release') {
+//            withSourcesJar()
+//        }
+//    }
 }
 
 dependencies {
@@ -82,15 +82,27 @@ sourceSets {
     }
 }
 
-publishing {
-    publications {
-        release(MavenPublication) {
-            groupId = "com.github.kin-labs"
-            artifactId = "kinetic"
-            version = "1.0.0-rc.3"
-
-            afterEvaluate {
+//publishing {
+//    publications {
+//        release(MavenPublication) {
+//            groupId = "com.github.kin-labs"
+//            artifactId = "kinetic"
+//            version = "1.0.0-rc.3"
+//
+//            afterEvaluate {
+//                from components.release
+//            }
+//        }
+//    }
+//}
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
                 from components.release
+                groupId = 'com.github.kin-labs'
+                artifactId = 'kinetic-android-sdk'
+                version = '1.0.0-rc.3'
             }
         }
     }
