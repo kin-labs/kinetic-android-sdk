@@ -17,11 +17,11 @@ class KineticSdk {
     val logger: StateFlow<Pair<LogLevel, String>>
     val solanaRpcEndpoint: String?
 
-    constructor(
+    private constructor(
         endpoint: String,
         environment: String,
         index: Int,
-        headers: Map<String, String> = emptyMap(),
+        headers: Map<String, String>,
         solanaRpcEndpoint: String?
     ) {
         this.internal = KineticSdkInternal(
@@ -44,16 +44,16 @@ class KineticSdk {
         }
 
     suspend fun createAccount(
+        owner: Keypair,
         commitment: Commitment = Commitment.confirmed,
         mint: String? = null,
-        owner: Keypair,
         referenceId: String? = null,
         referenceType: String? = null
     ): Transaction {
         return internal.createAccount(
+            owner,
             commitment,
             mint,
-            owner,
             referenceId,
             referenceType
         )
@@ -81,10 +81,10 @@ class KineticSdk {
 
     suspend fun makeTransfer(
         amount: String,
-        commitment: Commitment = Commitment.confirmed,
         destination: String,
-        mint: String? = null,
         owner: Keypair,
+        commitment: Commitment = Commitment.confirmed,
+        mint: String? = null,
         referenceId: String? = null,
         referenceType: String? = null,
         senderCreate: Boolean = false,
@@ -92,10 +92,10 @@ class KineticSdk {
     ): Transaction {
         return internal.makeTransfer(
             amount,
-            commitment,
             destination,
-            mint,
             owner,
+            commitment,
+            mint,
             referenceId,
             referenceType,
             senderCreate,
