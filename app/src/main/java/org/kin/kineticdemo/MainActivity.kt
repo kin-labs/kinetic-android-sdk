@@ -123,9 +123,7 @@ class MainActivity : AppCompatActivity() {
             kineticNetworkScope.launch {
                 val res = kinetic?.makeTransfer(
                     "1",
-                    Commitment.confirmed,
                     "BobQoPqWy5cpFioy1dMTYqNH9WpC39mkAEDJWXECoJ9y",
-                    null,
                     account!!
                 )
                 runOnUiThread { makeTransferText.text = res.toString() }

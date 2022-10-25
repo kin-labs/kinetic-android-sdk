@@ -54,9 +54,9 @@ class KineticSdkInternal(
     }
 
     suspend fun createAccount(
+        owner: Keypair,
         commitment: Commitment,
         mint: String?,
-        owner: Keypair,
         referenceId: String?,
         referenceType: String?,
     ): org.openapitools.client.models.Transaction {
@@ -133,10 +133,10 @@ class KineticSdkInternal(
 
     suspend fun makeTransfer(
         amount: String,
-        commitment: Commitment = Commitment.confirmed,
         destination: String,
-        mint: String?,
         owner: Keypair,
+        commitment: Commitment = Commitment.confirmed,
+        mint: String?,
         referenceId: String?,
         referenceType: String?,
         senderCreate: Boolean,
