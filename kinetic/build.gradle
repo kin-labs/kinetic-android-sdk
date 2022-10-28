@@ -1,8 +1,9 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
-    id "org.openapi.generator" version "5.3.0"
+    id "org.openapi.generator" version "6.2.0"
     id 'maven-publish'
+    id 'de.undercouch.download'
 }
 
 android {
@@ -57,12 +58,19 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.6'
 }
 
-openApiGenerate {
+
+task downloadApiSwagger(type: Download) {
+    src "https://raw.githubusercontent.com/kin-labs/kinetic/dev/api-swagger.json"
+    dest "$rootDir/api-swagger.json"
+}
+
+task generate(type: org.openapitools.generator.gradle.plugin.tasks.GenerateTask) {
+    dependsOn(downloadApiSwagger)
     generatorName = "kotlin"
-    inputSpec = "/Users/samuel/p/kin/mogami/api-swagger.json".toString()
+    inputSpec = "$rootDir/api-swagger.json".toString()
     outputDir = "$rootDir/kinetic/src/main/java/generated".toString()
-    apiPackage = "org.kinlabs.kinetic"
-    templateDir = "/Users/samuel/.openapi-generator/templates/kotlin-client"
+    apiPackage = "org.kin.kinetic.generated"
+    templateDir = "$rootDir/.openapi-generator/templates/kotlin-client"
     configOptions = [
             dateLibrary: "java8",
     ]

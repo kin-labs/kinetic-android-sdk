@@ -8,6 +8,7 @@ import com.solana.core.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
+import org.kin.kinetic.generated.*
 import org.openapitools.client.models.*
 import java.time.Instant
 
@@ -39,16 +40,12 @@ class KineticSdkInternal(
         this.environment = environment
         this.index = index
 
-        val apiHeaders: MutableMap<String, String> = mutableMapOf()
-        apiHeaders += headers
-        apiHeaders.put("kinetic-environment", environment)
-        apiHeaders.put("kinetic-index", index.toString())
-        apiHeaders.put("kinetic-user-agent", "Kinetic Android SDK v0.0.1-rc.1")
+        val apiHeaders: Map<String, String> = apiBaseOptions(headers)
 
-        accountApi = AccountApi(endpoint, apiHeaders)
-        airdropApi = AirdropApi(endpoint, apiHeaders)
-        transactionApi = TransactionApi(endpoint, apiHeaders)
-        appApi = AppApi(endpoint, apiHeaders)
+        accountApi = AccountApi(basePath = endpoint, headers = apiHeaders)
+        airdropApi = AirdropApi(basePath = endpoint, headers = apiHeaders)
+        transactionApi = TransactionApi(basePath = endpoint, headers = apiHeaders)
+        appApi = AppApi(basePath = endpoint, headers = apiHeaders)
 
         log(LogLevel.INFO, "Initializing $NAME@$VERSION\nendpoint: ${this.endpoint}, environment: ${this.environment}, index: ${this.index}")
     }
