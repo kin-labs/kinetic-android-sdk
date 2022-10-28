@@ -40,7 +40,7 @@ import org.openapitools.client.infrastructure.ResponseType
 import org.openapitools.client.infrastructure.Success
 import org.openapitools.client.infrastructure.toMultiValue
 
-class AccountApi(basePath: kotlin.String = defaultBasePath, client: OkHttpClient = ApiClient.defaultClient, headers: MutableMap<String, String> = mutableMapOf()) : ApiClient(basePath, client, headers) {
+class AccountApi(basePath: kotlin.String = defaultBasePath, client: OkHttpClient = ApiClient.defaultClient, headers: Map<String, String> = mapOf()) : ApiClient(basePath, client, headers) {
     companion object {
         @JvmStatic
         val defaultBasePath: String by lazy {

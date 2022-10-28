@@ -40,11 +40,7 @@ class KineticSdkInternal(
         this.environment = environment
         this.index = index
 
-        val apiHeaders: MutableMap<String, String> = mutableMapOf()
-        apiHeaders += headers
-        apiHeaders.put("kinetic-environment", environment)
-        apiHeaders.put("kinetic-index", index.toString())
-        apiHeaders.put("kinetic-user-agent", "Kinetic Android SDK v1.0.0-rc.3")
+        val apiHeaders: Map<String, String> = apiBaseOptions(headers)
 
         accountApi = AccountApi(basePath = endpoint, headers = apiHeaders)
         airdropApi = AirdropApi(basePath = endpoint, headers = apiHeaders)

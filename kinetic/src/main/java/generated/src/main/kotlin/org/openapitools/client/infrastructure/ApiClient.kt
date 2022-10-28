@@ -29,7 +29,7 @@ import java.time.OffsetTime
 import java.util.Locale
 import com.squareup.moshi.adapter
 
-open class ApiClient(val baseUrl: String, val client: OkHttpClient = defaultClient, val headers: MutableMap<String, String> = mutableMapOf()) {
+open class ApiClient(val baseUrl: String, val client: OkHttpClient = defaultClient, val headers: Map<String, String> = mapOf()) {
     companion object {
         protected const val ContentType = "Content-Type"
         protected const val Accept = "Accept"
