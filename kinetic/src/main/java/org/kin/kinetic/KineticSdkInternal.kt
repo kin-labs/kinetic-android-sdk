@@ -9,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import org.kin.kinetic.generated.*
+import org.kin.kinetic.helpers.addDecimals
 import org.openapitools.client.models.*
 import java.time.Instant
 
@@ -141,6 +142,7 @@ class KineticSdkInternal(
     ): org.openapitools.client.models.Transaction {
         val appConfig = ensureAppConfig()
         val mint = getAppMint(appConfig, mint)
+        val amount = addDecimals(amount, mint.decimals).toString()
 
         this.validateDestination(appConfig, destination)
 
@@ -192,6 +194,10 @@ class KineticSdkInternal(
     ): RequestAirdropResponse {
         val appConfig = ensureAppConfig()
         val mint = getAppMint(appConfig, mint)
+        var amount = amount
+        if (amount != null) {
+            amount = addDecimals(amount, mint.decimals).toString()
+        }
 
         return withContext(dispatcher) {
             airdropApi.requestAirdrop(
