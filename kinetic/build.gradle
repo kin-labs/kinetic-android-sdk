@@ -60,11 +60,12 @@ dependencies {
 
 
 task downloadApiSwagger(type: Download) {
-    src "https://raw.githubusercontent.com/kin-labs/kinetic/dev/api-swagger.json"
+    src "https://raw.githubusercontent.com/kin-labs/kinetic/main/api-swagger.json"
     dest "$rootDir/api-swagger.json"
 }
 
 task generate(type: org.openapitools.generator.gradle.plugin.tasks.GenerateTask) {
+    delete "$rootDir/kinetic/src/main/java/generated"
     dependsOn(downloadApiSwagger)
     generatorName = "kotlin"
     inputSpec = "$rootDir/api-swagger.json".toString()
