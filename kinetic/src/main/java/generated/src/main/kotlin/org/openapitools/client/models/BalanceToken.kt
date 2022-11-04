@@ -23,6 +23,7 @@ import com.squareup.moshi.Json
  *
  * @param account 
  * @param balance 
+ * @param decimals 
  * @param mint 
  */
 
@@ -33,6 +34,9 @@ data class BalanceToken (
 
     @Json(name = "balance")
     val balance: kotlin.String,
+
+    @Json(name = "decimals")
+    val decimals: kotlin.Int,
 
     @Json(name = "mint")
     val mint: kotlin.String
