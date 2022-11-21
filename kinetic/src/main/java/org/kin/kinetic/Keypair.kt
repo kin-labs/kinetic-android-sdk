@@ -86,7 +86,7 @@ class Keypair {
 
         fun random(): Keypair {
             val mnemonic = generateMnemonic()
-            return fromMnemonic(mnemonic)
+            return fromMnemonicSet(mnemonic)
         }
 
         // TODO deprecated
