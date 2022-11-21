@@ -47,39 +47,27 @@ class Keypair {
             return fromSecretKey(Base58.encode(byteArray))
         }
 
-//        fun fromMnemonicSeed(mnemonic: List<String>): Keypair {
-//            TODO()
-//        }
-
-        fun fromMnemonic(mnemonic: List<String>): Keypair {
-            val seed = MnemonicCode.toSeed(mnemonic, "")
-            val solanaBip44 = SolanaBip44()
-            val privateKey = solanaBip44.getPrivateKeyFromSeed(seed, DerivableType.BIP44)
-            val keyPair = TweetNaclFast.Signature.keyPair_fromSeed(privateKey)
-            val kp = Keypair(keyPair)
-            kp.mnemonic = mnemonic
-            return kp
-//            return this.fromMnemonicSet(mnemonic)[0]
+        fun fromMnemonicSeed(mnemonic: List<String>): Keypair {
+            return fromMnemonicSet(mnemonic)
         }
 
-        // TODO: Not implemented, need update to SolanaKT to allow passing in account number
-//        fun fromMnemonicSet(mnemonic: List<String>, from: Int = 0, to: Int = 10): List<Keypair> {
-//            val from = if (from < 0) 0 else from
-//            val to = if (to <= from) from + 1 else to
-//
-//            val solanaBip44 = SolanaBip44()
-//            val seed = MnemonicCode.toSeed(mnemonic, "")
-//            val privateKey = solanaBip44.getPrivateKeyFromSeed(seed, DerivableType.BIP44CHANGE)
-//            this.keyPair = TweetNaclFast.Signature.keyPair_fromSeed(privateKey)
-//            this.mnemonic = mnemonic
-//            this.solanaKeypair = HotAccount(keyPair.secretKey)
-//
-//            var keys = emptyList<Keypair>()
-//
-//            for (i in from..to) {
-//                Bip44
-//            }
-//        }
+        fun fromMnemonicSet(mnemonic: List<String>, from: Int = 0, to: Int = 1): Keypair {
+            val from = if (from < 0) 0 else from
+            val to = if (to <= from) from + 1 else to
+
+            val seed = MnemonicCode.toSeed(mnemonic, "")
+            val privateKey = SolanaBip44().getPrivateKeyFromSeed(seed, DerivableType.BIP44CHANGE)
+            val keyPair = TweetNaclFast.Signature.keyPair_fromSeed(privateKey)
+
+            val keys = mutableListOf<Keypair>()
+
+            for (index in from..to) {
+                val keypair = Keypair(keyPair)
+                keypair.mnemonic = mnemonic
+                keys.add(keypair)
+            }
+            return keys[0]
+        }
 
 //        fun derive(seed: ByteArray, walletIndex: Int): Keypair {
 //            val solanaBip44 = SolanaBip44()
@@ -101,6 +89,7 @@ class Keypair {
             return fromMnemonic(mnemonic)
         }
 
+        // TODO deprecated
         fun generateMnemonic(strength: Int = 128): List<String> {
             val networkParameters = NetworkParameters.fromID("org.bitcoin.production")
             return Wallet(networkParameters).keyChainSeed.mnemonicCode!!
