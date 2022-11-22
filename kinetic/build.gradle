@@ -1,7 +1,7 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
-    id "org.openapi.generator" version "6.2.0"
+    id "org.openapi.generator" version "6.2.1"
     id 'maven-publish'
     id 'de.undercouch.download'
 }
@@ -12,7 +12,7 @@ android {
     compileSdk 33
 
     defaultConfig {
-        minSdk 23
+        minSdk 26
         targetSdk 33
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -59,21 +59,31 @@ dependencies {
 }
 
 
-task downloadApiSwagger(type: Download) {
+task downloadSwagger(type: Download) {
     src "https://raw.githubusercontent.com/kin-labs/kinetic/main/api-swagger.json"
     dest "$rootDir/api-swagger.json"
 }
 
-task generate(type: org.openapitools.generator.gradle.plugin.tasks.GenerateTask) {
-    delete "$rootDir/kinetic/src/main/java/generated"
-    dependsOn(downloadApiSwagger)
+openApiGenerate {
     generatorName = "kotlin"
+    ignoreFileOverride = "$rootDir/kinetic/.openapi.ignore".toString()
     inputSpec = "$rootDir/api-swagger.json".toString()
-    outputDir = "$rootDir/kinetic/src/main/java/generated".toString()
-    apiPackage = "org.kin.kinetic.generated"
+    outputDir = "$rootDir".toString()
+    apiPackage = "org.kin.kinetic.generated.api"
+    modelPackage = "org.kin.kinetic.generated.api.model"
+    packageName = "org.kin.kinetic.generated"
+    generateModelDocumentation = false
+    generateModelTests = false
+    generateApiDocumentation = false
+    generateApiTests = false
     templateDir = "$rootDir/.openapi-generator/templates/kotlin-client"
     configOptions = [
             dateLibrary: "java8",
+            omitGradleWrapper: "true",
+            sourceFolder: "kinetic/src/main/java",
+    ]
+    globalProperties = [
+            modelDocs: "false",
     ]
 }
 

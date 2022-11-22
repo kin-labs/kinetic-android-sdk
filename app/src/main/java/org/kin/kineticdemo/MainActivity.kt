@@ -9,7 +9,6 @@ import org.kin.kinetic.Keypair
 import org.kin.kinetic.KineticSdk
 import org.kin.kinetic.LogLevel
 import kotlinx.coroutines.*
-import org.openapitools.client.models.Commitment
 
 class MainActivity : AppCompatActivity() {
     private lateinit var getConfigButton: Button

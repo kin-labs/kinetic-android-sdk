@@ -8,9 +8,10 @@ import com.solana.core.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
-import org.kin.kinetic.generated.*
+import org.kin.kinetic.generated.api.*
+import org.kin.kinetic.generated.api.model.*
+import org.kin.kinetic.generated.api.model.Transaction
 import org.kin.kinetic.helpers.addDecimals
-import org.openapitools.client.models.*
 import java.time.Instant
 
 class KineticSdkInternal(
@@ -57,7 +58,7 @@ class KineticSdkInternal(
         mint: String?,
         referenceId: String?,
         referenceType: String?,
-    ): org.openapitools.client.models.Transaction {
+    ): Transaction {
         val appConfig = ensureAppConfig()
         val mint = getAppMint(appConfig, mint)
 
@@ -139,7 +140,7 @@ class KineticSdkInternal(
         referenceType: String?,
         senderCreate: Boolean,
         type: KinBinaryMemo.TransactionType,
-    ): org.openapitools.client.models.Transaction {
+    ): Transaction {
         val appConfig = ensureAppConfig()
         val mint = getAppMint(appConfig, mint)
         val amount = addDecimals(amount, mint.decimals).toString()

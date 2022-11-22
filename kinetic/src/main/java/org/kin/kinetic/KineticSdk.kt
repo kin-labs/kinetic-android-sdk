@@ -5,7 +5,7 @@ import com.solana.Solana
 import com.solana.networking.OkHttpNetworkingRouter
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import org.openapitools.client.models.*
+import org.kin.kinetic.generated.api.model.*
 
 class KineticSdk {
     var solana: Solana? = null

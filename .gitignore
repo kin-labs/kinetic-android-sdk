@@ -14,3 +14,5 @@
 .externalNativeBuild
 .cxx
 local.properties
+/.openapi-generator/FILES
+/.openapi-generator/VERSION

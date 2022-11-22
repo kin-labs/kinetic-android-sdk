@@ -491,7 +491,7 @@
   "info": {
     "title": "@kin-kinetic/api",
     "description": "The OpenAPI definition of the Kinetic API",
-    "version": "1.0.0-rc.6",
+    "version": "1.0.0-rc.8",
     "contact": {}
   },
   "tags": [
@@ -1088,21 +1088,23 @@
             "nullable": true
           },
           "innerInstructions": {
+            "nullable": true,
             "type": "array",
             "items": {
               "type": "string"
             }
           },
           "preBalances": {
+            "nullable": true,
             "type": "array",
             "items": {
-              "type": "string"
+              "type": "integer"
             }
           },
           "postBalances": {
             "type": "array",
             "items": {
-              "type": "string"
+              "type": "integer"
             }
           },
           "logMessages": {
@@ -1131,7 +1133,7 @@
             "nullable": true
           }
         },
-        "required": ["innerInstructions", "preBalances", "postBalances"]
+        "required": ["postBalances"]
       },
       "TransactionResponse": {
         "type": "object",
