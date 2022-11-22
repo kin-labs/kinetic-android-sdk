@@ -31,7 +31,7 @@ class KeypairTest {
     @Test
     fun generateKeypairFromMnemonic() {
         val kp = Keypair.random()
-        val restored = Keypair.fromMnemonicSet(kp.mnemonic!!)
+        val restored = Keypair.fromMnemonic(kp.mnemonic!!)
 
         assertEquals(restored.mnemonic, kp.mnemonic)
         assertEquals(restored.secretKey, kp.secretKey)
@@ -43,13 +43,10 @@ class KeypairTest {
      */
     @Test
     fun generateKeypairFromMnemonic12() {
-        val kp = Keypair.fromMnemonicSet(TEST_MNEMONIC_12)
-        val kpSecret = Keypair.fromMnemonicSeed(TEST_MNEMONIC_12)
+        val kp = Keypair.fromMnemonic(TEST_MNEMONIC_12)
 
         assertEquals(kp.publicKey, TEST_MNEMONIC_12_KEYPAIR.publicKey)
-        assertEquals(kpSecret.publicKey, TEST_MNEMONIC_12_KEYPAIR.publicKey)
         assertEquals(kp.secretKey, TEST_MNEMONIC_12_KEYPAIR.secretKey)
-        assertEquals(kpSecret.secretKey, TEST_MNEMONIC_12_KEYPAIR.secretKey)
     }
 
     /**
@@ -57,14 +54,10 @@ class KeypairTest {
      */
     @Test
     fun generateKeypairFromMnemonic24() {
-        val kp = Keypair.fromMnemonicSet(TEST_MNEMONIC_24)
-        val kpSecret = Keypair.fromMnemonicSeed(TEST_MNEMONIC_24)
+        val kp = Keypair.fromMnemonic(TEST_MNEMONIC_24)
 
         assertEquals(kp.mnemonic, TEST_MNEMONIC_24_KEYPAIR.mnemonic)
-        assertEquals(kpSecret.mnemonic, TEST_MNEMONIC_24_KEYPAIR.mnemonic)
         assertEquals(kp.publicKey, TEST_MNEMONIC_24_KEYPAIR.publicKey)
-        assertEquals(kpSecret.publicKey, TEST_MNEMONIC_24_KEYPAIR.publicKey)
         assertEquals(kp.secretKey, TEST_MNEMONIC_24_KEYPAIR.secretKey)
-        assertEquals(kpSecret.secretKey, TEST_MNEMONIC_24_KEYPAIR.secretKey)
     }
 }
