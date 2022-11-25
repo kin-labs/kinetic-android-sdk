@@ -165,7 +165,7 @@ class KineticSdkInternal(
             mint.feePayer,
             mint.publicKey,
             owner.solana,
-            senderCreate,
+            accounts.isEmpty() && senderCreate,
             type
         )
 
