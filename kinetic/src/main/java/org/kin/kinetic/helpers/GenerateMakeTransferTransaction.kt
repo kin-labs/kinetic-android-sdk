@@ -35,7 +35,7 @@ internal fun generateMakeTransferTransaction(
         instructions += createAssociatedTokenAccountInstruction(
             feePayerKey,
             destinationTokenAccount,
-            ownerPublicKey,
+            PublicKey(destination),
             mintKey
         )
     }
