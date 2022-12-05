@@ -28,6 +28,7 @@ import java.time.OffsetDateTime
 import java.time.OffsetTime
 import java.util.Locale
 import com.squareup.moshi.adapter
+import java.util.concurrent.TimeUnit
 
 open class ApiClient(val baseUrl: String, val client: OkHttpClient = defaultClient, val headers: Map<String, String> = mapOf()) {
     companion object {
