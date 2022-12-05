@@ -57,5 +57,4 @@ internal fun generateMakeTransferTransaction(
     transaction.partialSign(owner)
 
     return transaction
-
 }
