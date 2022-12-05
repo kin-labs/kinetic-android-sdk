@@ -32,7 +32,7 @@ jobs:
           APP_1_NAME: 'App 1'
           AUTH_USERS: 'alice|Kinetic@alice1|Admin,bob|Kinetic@bob1'
           AUTH_PASSWORD_ENABLED: true
-          DATABASE_URL: 'postgresql://prisma:prisma@localhost:5432/prisma?schema=kinetic'
+          DATABASE_URL: 'postgresql://prisma:prisma@postgres:5432/prisma?schema=kinetic'
           JWT_SECRET: 'KineticJwtSecret!'
           NX_CLOUD_DISTRIBUTED_EXECUTION: false
           SOLANA_LOCAL_ENABLED: true
