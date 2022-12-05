@@ -35,7 +35,7 @@ internal fun generateMakeTransferTransaction(
         instructions += createAssociatedTokenAccountInstruction(
             feePayerKey,
             destinationTokenAccount,
-            ownerPublicKey,
+            PublicKey(destination),
             mintKey
         )
     }
@@ -57,5 +57,4 @@ internal fun generateMakeTransferTransaction(
     transaction.partialSign(owner)
 
     return transaction
-
 }

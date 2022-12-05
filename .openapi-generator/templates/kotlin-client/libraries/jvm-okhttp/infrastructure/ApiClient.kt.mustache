@@ -76,6 +76,7 @@ import com.fasterxml.jackson.core.type.TypeReference
 {{#moshi}}
 import com.squareup.moshi.adapter
 {{/moshi}}
+import java.util.concurrent.TimeUnit
 
 {{#nonPublicApi}}internal {{/nonPublicApi}}open class ApiClient(val baseUrl: String, val client: OkHttpClient = defaultClient, val headers: Map<String, String> = mapOf()) {
     {{#nonPublicApi}}internal {{/nonPublicApi}}companion object {
@@ -101,6 +102,10 @@ import com.squareup.moshi.adapter
 
         @JvmStatic
         val builder: OkHttpClient.Builder = OkHttpClient.Builder()
+            .connectTimeout(1, TimeUnit.MINUTES)
+            .writeTimeout(1, TimeUnit.MINUTES)
+            .readTimeout(1, TimeUnit.MINUTES)
+            .callTimeout(1, TimeUnit.MINUTES)
     }
 
     /**
