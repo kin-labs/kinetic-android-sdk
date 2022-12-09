@@ -26,6 +26,16 @@ class KineticSdk {
             return this.internal.appConfig
         }
 
+    var endpoint: String = ""
+        get() {
+            return this.sdkConfig.endpoint
+        }
+
+    var solanaRpcEndpoint: String? = null
+        get() {
+            return this.sdkConfig.solanaRpcEndpoint
+        }
+
     suspend fun createAccount(
         owner: Keypair,
         commitment: Commitment = Commitment.confirmed,
