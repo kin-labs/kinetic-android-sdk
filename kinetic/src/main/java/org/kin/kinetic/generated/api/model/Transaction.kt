@@ -72,7 +72,7 @@ data class Transaction (
     val amount: kotlin.String? = null,
 
     @Json(name = "decimals")
-    val decimals: java.math.BigDecimal? = null,
+    val decimals: kotlin.Int? = null,
 
     @Json(name = "destination")
     val destination: kotlin.String? = null,
@@ -93,7 +93,7 @@ data class Transaction (
     val mint: kotlin.String? = null,
 
     @Json(name = "processingDuration")
-    val processingDuration: java.math.BigDecimal? = null,
+    val processingDuration: kotlin.Int? = null,
 
     @Json(name = "referenceId")
     val referenceId: kotlin.String? = null,
@@ -108,13 +108,13 @@ data class Transaction (
     val solanaCommitted: java.time.OffsetDateTime? = null,
 
     @Json(name = "solanaCommittedDuration")
-    val solanaCommittedDuration: java.math.BigDecimal? = null,
+    val solanaCommittedDuration: kotlin.Int? = null,
 
     @Json(name = "solanaFinalized")
     val solanaFinalized: java.time.OffsetDateTime? = null,
 
     @Json(name = "solanaFinalizedDuration")
-    val solanaFinalizedDuration: java.math.BigDecimal? = null,
+    val solanaFinalizedDuration: kotlin.Int? = null,
 
     @Json(name = "solanaStart")
     val solanaStart: java.time.OffsetDateTime? = null,
@@ -129,7 +129,7 @@ data class Transaction (
     val status: TransactionStatus? = null,
 
     @Json(name = "totalDuration")
-    val totalDuration: java.math.BigDecimal? = null,
+    val totalDuration: kotlin.Int? = null,
 
     @Json(name = "tx")
     val tx: kotlin.String? = null,
@@ -144,7 +144,7 @@ data class Transaction (
     val webhookEventEnd: java.time.OffsetDateTime? = null,
 
     @Json(name = "webhookEventDuration")
-    val webhookEventDuration: java.math.BigDecimal? = null,
+    val webhookEventDuration: kotlin.Int? = null,
 
     @Json(name = "webhookVerifyStart")
     val webhookVerifyStart: java.time.OffsetDateTime? = null,
@@ -153,7 +153,7 @@ data class Transaction (
     val webhookVerifyEnd: java.time.OffsetDateTime? = null,
 
     @Json(name = "webhookVerifyDuration")
-    val webhookVerifyDuration: java.math.BigDecimal? = null
+    val webhookVerifyDuration: kotlin.Int? = null
 
 )
 

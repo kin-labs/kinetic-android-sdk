@@ -38,10 +38,10 @@ data class TransactionResponse (
     val meta: ConfirmedTransactionMeta,
 
     @Json(name = "slot")
-    val slot: java.math.BigDecimal? = null,
+    val slot: kotlin.Int? = null,
 
     @Json(name = "blockTime")
-    val blockTime: java.math.BigDecimal? = null
+    val blockTime: kotlin.Int? = null
 
 )
 

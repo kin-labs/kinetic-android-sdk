@@ -19,7 +19,10 @@ import java.io.IOException
 import okhttp3.OkHttpClient
 import okhttp3.HttpUrl
 
+import org.kin.kinetic.generated.api.model.AccountInfo
 import org.kin.kinetic.generated.api.model.BalanceResponse
+import org.kin.kinetic.generated.api.model.CloseAccountRequest
+import org.kin.kinetic.generated.api.model.Commitment
 import org.kin.kinetic.generated.api.model.CreateAccountRequest
 import org.kin.kinetic.generated.api.model.HistoryResponse
 import org.kin.kinetic.generated.api.model.Transaction
@@ -46,6 +49,77 @@ class AccountApi(basePath: kotlin.String = defaultBasePath, client: OkHttpClient
         val defaultBasePath: String by lazy {
             System.getProperties().getProperty(ApiClient.baseUrlKey, "http://localhost:3000")
         }
+    }
+
+    /**
+     * 
+     * 
+     * @param closeAccountRequest 
+     * @return Transaction
+     * @throws IllegalStateException If the request is not correctly configured
+     * @throws IOException Rethrows the OkHttp execute method exception
+     * @throws UnsupportedOperationException If the API returns an informational or redirection response
+     * @throws ClientException If the API returns a client error response
+     * @throws ServerException If the API returns a server error response
+     */
+    @Suppress("UNCHECKED_CAST")
+    @Throws(IllegalStateException::class, IOException::class, UnsupportedOperationException::class, ClientException::class, ServerException::class)
+    fun closeAccount(closeAccountRequest: CloseAccountRequest) : Transaction {
+        val localVarResponse = closeAccountWithHttpInfo(closeAccountRequest = closeAccountRequest)
+
+        return when (localVarResponse.responseType) {
+            ResponseType.Success -> (localVarResponse as Success<*>).data as Transaction
+            ResponseType.Informational -> throw UnsupportedOperationException("Client does not support Informational responses.")
+            ResponseType.Redirection -> throw UnsupportedOperationException("Client does not support Redirection responses.")
+            ResponseType.ClientError -> {
+                val localVarError = localVarResponse as ClientError<*>
+                throw ClientException("Client error : ${localVarError.statusCode} ${localVarError.message.orEmpty()}", localVarError.statusCode, localVarResponse)
+            }
+            ResponseType.ServerError -> {
+                val localVarError = localVarResponse as ServerError<*>
+                throw ServerException("Server error : ${localVarError.statusCode} ${localVarError.message.orEmpty()}", localVarError.statusCode, localVarResponse)
+            }
+        }
+    }
+
+    /**
+     * 
+     * 
+     * @param closeAccountRequest 
+     * @return ApiResponse<Transaction?>
+     * @throws IllegalStateException If the request is not correctly configured
+     * @throws IOException Rethrows the OkHttp execute method exception
+     */
+    @Suppress("UNCHECKED_CAST")
+    @Throws(IllegalStateException::class, IOException::class)
+    fun closeAccountWithHttpInfo(closeAccountRequest: CloseAccountRequest) : ApiResponse<Transaction?> {
+        val localVariableConfig = closeAccountRequestConfig(closeAccountRequest = closeAccountRequest)
+
+        return request<CloseAccountRequest, Transaction>(
+            localVariableConfig
+        )
+    }
+
+    /**
+     * To obtain the request config of the operation closeAccount
+     *
+     * @param closeAccountRequest 
+     * @return RequestConfig
+     */
+    fun closeAccountRequestConfig(closeAccountRequest: CloseAccountRequest) : RequestConfig<CloseAccountRequest> {
+        val localVariableBody = closeAccountRequest
+        val localVariableQuery: MultiValueMap = mutableMapOf()
+        val localVariableHeaders: MutableMap<String, String> = mutableMapOf()
+        localVariableHeaders["Content-Type"] = "application/json"
+        localVariableHeaders["Accept"] = "application/json"
+
+        return RequestConfig(
+            method = RequestMethod.POST,
+            path = "/api/account/close",
+            query = localVariableQuery,
+            headers = localVariableHeaders,
+            body = localVariableBody
+        )
     }
 
     /**
@@ -125,19 +199,21 @@ class AccountApi(basePath: kotlin.String = defaultBasePath, client: OkHttpClient
      * @param environment 
      * @param index 
      * @param accountId 
-     * @return void
+     * @param commitment 
+     * @return AccountInfo
      * @throws IllegalStateException If the request is not correctly configured
      * @throws IOException Rethrows the OkHttp execute method exception
      * @throws UnsupportedOperationException If the API returns an informational or redirection response
      * @throws ClientException If the API returns a client error response
      * @throws ServerException If the API returns a server error response
      */
+    @Suppress("UNCHECKED_CAST")
     @Throws(IllegalStateException::class, IOException::class, UnsupportedOperationException::class, ClientException::class, ServerException::class)
-    fun getAccountInfo(environment: kotlin.String, index: kotlin.Int, accountId: kotlin.String) : Unit {
-        val localVarResponse = getAccountInfoWithHttpInfo(environment = environment, index = index, accountId = accountId)
+    fun getAccountInfo(environment: kotlin.String, index: kotlin.Int, accountId: kotlin.String, commitment: Commitment) : AccountInfo {
+        val localVarResponse = getAccountInfoWithHttpInfo(environment = environment, index = index, accountId = accountId, commitment = commitment)
 
         return when (localVarResponse.responseType) {
-            ResponseType.Success -> Unit
+            ResponseType.Success -> (localVarResponse as Success<*>).data as AccountInfo
             ResponseType.Informational -> throw UnsupportedOperationException("Client does not support Informational responses.")
             ResponseType.Redirection -> throw UnsupportedOperationException("Client does not support Redirection responses.")
             ResponseType.ClientError -> {
@@ -157,15 +233,17 @@ class AccountApi(basePath: kotlin.String = defaultBasePath, client: OkHttpClient
      * @param environment 
      * @param index 
      * @param accountId 
-     * @return ApiResponse<Unit?>
+     * @param commitment 
+     * @return ApiResponse<AccountInfo?>
      * @throws IllegalStateException If the request is not correctly configured
      * @throws IOException Rethrows the OkHttp execute method exception
      */
+    @Suppress("UNCHECKED_CAST")
     @Throws(IllegalStateException::class, IOException::class)
-    fun getAccountInfoWithHttpInfo(environment: kotlin.String, index: kotlin.Int, accountId: kotlin.String) : ApiResponse<Unit?> {
-        val localVariableConfig = getAccountInfoRequestConfig(environment = environment, index = index, accountId = accountId)
+    fun getAccountInfoWithHttpInfo(environment: kotlin.String, index: kotlin.Int, accountId: kotlin.String, commitment: Commitment) : ApiResponse<AccountInfo?> {
+        val localVariableConfig = getAccountInfoRequestConfig(environment = environment, index = index, accountId = accountId, commitment = commitment)
 
-        return request<Unit, Unit>(
+        return request<Unit, AccountInfo>(
             localVariableConfig
         )
     }
@@ -176,13 +254,18 @@ class AccountApi(basePath: kotlin.String = defaultBasePath, client: OkHttpClient
      * @param environment 
      * @param index 
      * @param accountId 
+     * @param commitment 
      * @return RequestConfig
      */
-    fun getAccountInfoRequestConfig(environment: kotlin.String, index: kotlin.Int, accountId: kotlin.String) : RequestConfig<Unit> {
+    fun getAccountInfoRequestConfig(environment: kotlin.String, index: kotlin.Int, accountId: kotlin.String, commitment: Commitment) : RequestConfig<Unit> {
         val localVariableBody = null
-        val localVariableQuery: MultiValueMap = mutableMapOf()
+        val localVariableQuery: MultiValueMap = mutableMapOf<kotlin.String, kotlin.collections.List<kotlin.String>>()
+            .apply {
+                put("commitment", listOf(commitment.toString()))
+            }
         val localVariableHeaders: MutableMap<String, String> = mutableMapOf()
-        
+        localVariableHeaders["Accept"] = "application/json"
+
         return RequestConfig(
             method = RequestMethod.GET,
             path = "/api/account/info/{environment}/{index}/{accountId}".replace("{"+"environment"+"}", encodeURIComponent(environment.toString())).replace("{"+"index"+"}", encodeURIComponent(index.toString())).replace("{"+"accountId"+"}", encodeURIComponent(accountId.toString())),
@@ -198,6 +281,7 @@ class AccountApi(basePath: kotlin.String = defaultBasePath, client: OkHttpClient
      * @param environment 
      * @param index 
      * @param accountId 
+     * @param commitment 
      * @return BalanceResponse
      * @throws IllegalStateException If the request is not correctly configured
      * @throws IOException Rethrows the OkHttp execute method exception
@@ -207,8 +291,8 @@ class AccountApi(basePath: kotlin.String = defaultBasePath, client: OkHttpClient
      */
     @Suppress("UNCHECKED_CAST")
     @Throws(IllegalStateException::class, IOException::class, UnsupportedOperationException::class, ClientException::class, ServerException::class)
-    fun getBalance(environment: kotlin.String, index: kotlin.Int, accountId: kotlin.String) : BalanceResponse {
-        val localVarResponse = getBalanceWithHttpInfo(environment = environment, index = index, accountId = accountId)
+    fun getBalance(environment: kotlin.String, index: kotlin.Int, accountId: kotlin.String, commitment: Commitment) : BalanceResponse {
+        val localVarResponse = getBalanceWithHttpInfo(environment = environment, index = index, accountId = accountId, commitment = commitment)
 
         return when (localVarResponse.responseType) {
             ResponseType.Success -> (localVarResponse as Success<*>).data as BalanceResponse
@@ -231,14 +315,15 @@ class AccountApi(basePath: kotlin.String = defaultBasePath, client: OkHttpClient
      * @param environment 
      * @param index 
      * @param accountId 
+     * @param commitment 
      * @return ApiResponse<BalanceResponse?>
      * @throws IllegalStateException If the request is not correctly configured
      * @throws IOException Rethrows the OkHttp execute method exception
      */
     @Suppress("UNCHECKED_CAST")
     @Throws(IllegalStateException::class, IOException::class)
-    fun getBalanceWithHttpInfo(environment: kotlin.String, index: kotlin.Int, accountId: kotlin.String) : ApiResponse<BalanceResponse?> {
-        val localVariableConfig = getBalanceRequestConfig(environment = environment, index = index, accountId = accountId)
+    fun getBalanceWithHttpInfo(environment: kotlin.String, index: kotlin.Int, accountId: kotlin.String, commitment: Commitment) : ApiResponse<BalanceResponse?> {
+        val localVariableConfig = getBalanceRequestConfig(environment = environment, index = index, accountId = accountId, commitment = commitment)
 
         return request<Unit, BalanceResponse>(
             localVariableConfig
@@ -251,11 +336,15 @@ class AccountApi(basePath: kotlin.String = defaultBasePath, client: OkHttpClient
      * @param environment 
      * @param index 
      * @param accountId 
+     * @param commitment 
      * @return RequestConfig
      */
-    fun getBalanceRequestConfig(environment: kotlin.String, index: kotlin.Int, accountId: kotlin.String) : RequestConfig<Unit> {
+    fun getBalanceRequestConfig(environment: kotlin.String, index: kotlin.Int, accountId: kotlin.String, commitment: Commitment) : RequestConfig<Unit> {
         val localVariableBody = null
-        val localVariableQuery: MultiValueMap = mutableMapOf()
+        val localVariableQuery: MultiValueMap = mutableMapOf<kotlin.String, kotlin.collections.List<kotlin.String>>()
+            .apply {
+                put("commitment", listOf(commitment.toString()))
+            }
         val localVariableHeaders: MutableMap<String, String> = mutableMapOf()
         localVariableHeaders["Accept"] = "application/json"
 
@@ -275,6 +364,7 @@ class AccountApi(basePath: kotlin.String = defaultBasePath, client: OkHttpClient
      * @param index 
      * @param accountId 
      * @param mint 
+     * @param commitment 
      * @return kotlin.collections.List<HistoryResponse>
      * @throws IllegalStateException If the request is not correctly configured
      * @throws IOException Rethrows the OkHttp execute method exception
@@ -284,8 +374,8 @@ class AccountApi(basePath: kotlin.String = defaultBasePath, client: OkHttpClient
      */
     @Suppress("UNCHECKED_CAST")
     @Throws(IllegalStateException::class, IOException::class, UnsupportedOperationException::class, ClientException::class, ServerException::class)
-    fun getHistory(environment: kotlin.String, index: kotlin.Int, accountId: kotlin.String, mint: kotlin.String) : kotlin.collections.List<HistoryResponse> {
-        val localVarResponse = getHistoryWithHttpInfo(environment = environment, index = index, accountId = accountId, mint = mint)
+    fun getHistory(environment: kotlin.String, index: kotlin.Int, accountId: kotlin.String, mint: kotlin.String, commitment: Commitment) : kotlin.collections.List<HistoryResponse> {
+        val localVarResponse = getHistoryWithHttpInfo(environment = environment, index = index, accountId = accountId, mint = mint, commitment = commitment)
 
         return when (localVarResponse.responseType) {
             ResponseType.Success -> (localVarResponse as Success<*>).data as kotlin.collections.List<HistoryResponse>
@@ -309,14 +399,15 @@ class AccountApi(basePath: kotlin.String = defaultBasePath, client: OkHttpClient
      * @param index 
      * @param accountId 
      * @param mint 
+     * @param commitment 
      * @return ApiResponse<kotlin.collections.List<HistoryResponse>?>
      * @throws IllegalStateException If the request is not correctly configured
      * @throws IOException Rethrows the OkHttp execute method exception
      */
     @Suppress("UNCHECKED_CAST")
     @Throws(IllegalStateException::class, IOException::class)
-    fun getHistoryWithHttpInfo(environment: kotlin.String, index: kotlin.Int, accountId: kotlin.String, mint: kotlin.String) : ApiResponse<kotlin.collections.List<HistoryResponse>?> {
-        val localVariableConfig = getHistoryRequestConfig(environment = environment, index = index, accountId = accountId, mint = mint)
+    fun getHistoryWithHttpInfo(environment: kotlin.String, index: kotlin.Int, accountId: kotlin.String, mint: kotlin.String, commitment: Commitment) : ApiResponse<kotlin.collections.List<HistoryResponse>?> {
+        val localVariableConfig = getHistoryRequestConfig(environment = environment, index = index, accountId = accountId, mint = mint, commitment = commitment)
 
         return request<Unit, kotlin.collections.List<HistoryResponse>>(
             localVariableConfig
@@ -330,11 +421,15 @@ class AccountApi(basePath: kotlin.String = defaultBasePath, client: OkHttpClient
      * @param index 
      * @param accountId 
      * @param mint 
+     * @param commitment 
      * @return RequestConfig
      */
-    fun getHistoryRequestConfig(environment: kotlin.String, index: kotlin.Int, accountId: kotlin.String, mint: kotlin.String) : RequestConfig<Unit> {
+    fun getHistoryRequestConfig(environment: kotlin.String, index: kotlin.Int, accountId: kotlin.String, mint: kotlin.String, commitment: Commitment) : RequestConfig<Unit> {
         val localVariableBody = null
-        val localVariableQuery: MultiValueMap = mutableMapOf()
+        val localVariableQuery: MultiValueMap = mutableMapOf<kotlin.String, kotlin.collections.List<kotlin.String>>()
+            .apply {
+                put("commitment", listOf(commitment.toString()))
+            }
         val localVariableHeaders: MutableMap<String, String> = mutableMapOf()
         localVariableHeaders["Accept"] = "application/json"
 
@@ -354,6 +449,7 @@ class AccountApi(basePath: kotlin.String = defaultBasePath, client: OkHttpClient
      * @param index 
      * @param accountId 
      * @param mint 
+     * @param commitment 
      * @return kotlin.collections.List<kotlin.String>
      * @throws IllegalStateException If the request is not correctly configured
      * @throws IOException Rethrows the OkHttp execute method exception
@@ -363,8 +459,8 @@ class AccountApi(basePath: kotlin.String = defaultBasePath, client: OkHttpClient
      */
     @Suppress("UNCHECKED_CAST")
     @Throws(IllegalStateException::class, IOException::class, UnsupportedOperationException::class, ClientException::class, ServerException::class)
-    fun getTokenAccounts(environment: kotlin.String, index: kotlin.Int, accountId: kotlin.String, mint: kotlin.String) : kotlin.collections.List<kotlin.String> {
-        val localVarResponse = getTokenAccountsWithHttpInfo(environment = environment, index = index, accountId = accountId, mint = mint)
+    fun getTokenAccounts(environment: kotlin.String, index: kotlin.Int, accountId: kotlin.String, mint: kotlin.String, commitment: Commitment) : kotlin.collections.List<kotlin.String> {
+        val localVarResponse = getTokenAccountsWithHttpInfo(environment = environment, index = index, accountId = accountId, mint = mint, commitment = commitment)
 
         return when (localVarResponse.responseType) {
             ResponseType.Success -> (localVarResponse as Success<*>).data as kotlin.collections.List<kotlin.String>
@@ -388,14 +484,15 @@ class AccountApi(basePath: kotlin.String = defaultBasePath, client: OkHttpClient
      * @param index 
      * @param accountId 
      * @param mint 
+     * @param commitment 
      * @return ApiResponse<kotlin.collections.List<kotlin.String>?>
      * @throws IllegalStateException If the request is not correctly configured
      * @throws IOException Rethrows the OkHttp execute method exception
      */
     @Suppress("UNCHECKED_CAST")
     @Throws(IllegalStateException::class, IOException::class)
-    fun getTokenAccountsWithHttpInfo(environment: kotlin.String, index: kotlin.Int, accountId: kotlin.String, mint: kotlin.String) : ApiResponse<kotlin.collections.List<kotlin.String>?> {
-        val localVariableConfig = getTokenAccountsRequestConfig(environment = environment, index = index, accountId = accountId, mint = mint)
+    fun getTokenAccountsWithHttpInfo(environment: kotlin.String, index: kotlin.Int, accountId: kotlin.String, mint: kotlin.String, commitment: Commitment) : ApiResponse<kotlin.collections.List<kotlin.String>?> {
+        val localVariableConfig = getTokenAccountsRequestConfig(environment = environment, index = index, accountId = accountId, mint = mint, commitment = commitment)
 
         return request<Unit, kotlin.collections.List<kotlin.String>>(
             localVariableConfig
@@ -409,11 +506,15 @@ class AccountApi(basePath: kotlin.String = defaultBasePath, client: OkHttpClient
      * @param index 
      * @param accountId 
      * @param mint 
+     * @param commitment 
      * @return RequestConfig
      */
-    fun getTokenAccountsRequestConfig(environment: kotlin.String, index: kotlin.Int, accountId: kotlin.String, mint: kotlin.String) : RequestConfig<Unit> {
+    fun getTokenAccountsRequestConfig(environment: kotlin.String, index: kotlin.Int, accountId: kotlin.String, mint: kotlin.String, commitment: Commitment) : RequestConfig<Unit> {
         val localVariableBody = null
-        val localVariableQuery: MultiValueMap = mutableMapOf()
+        val localVariableQuery: MultiValueMap = mutableMapOf<kotlin.String, kotlin.collections.List<kotlin.String>>()
+            .apply {
+                put("commitment", listOf(commitment.toString()))
+            }
         val localVariableHeaders: MutableMap<String, String> = mutableMapOf()
         localVariableHeaders["Accept"] = "application/json"
 

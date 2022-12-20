@@ -15,6 +15,7 @@
 
 package org.kin.kinetic.generated.api.model
 
+import org.kin.kinetic.generated.api.model.ConfirmationStatus
 
 import com.squareup.moshi.Json
 
@@ -30,28 +31,16 @@ import com.squareup.moshi.Json
 data class SignatureStatus (
 
     @Json(name = "slot")
-    val slot: java.math.BigDecimal? = null,
+    val slot: kotlin.Int? = null,
 
     @Json(name = "confirmations")
-    val confirmations: java.math.BigDecimal? = null,
+    val confirmations: kotlin.Int? = null,
 
     @Json(name = "err")
     val err: kotlin.Any? = null,
 
     @Json(name = "confirmationStatus")
-    val confirmationStatus: SignatureStatus.ConfirmationStatus? = null
+    val confirmationStatus: ConfirmationStatus? = null
 
-) {
-
-    /**
-     * 
-     *
-     * Values: processed,confirmed,finalized
-     */
-    enum class ConfirmationStatus(val value: kotlin.String) {
-        @Json(name = "processed") processed("processed"),
-        @Json(name = "confirmed") confirmed("confirmed"),
-        @Json(name = "finalized") finalized("finalized");
-    }
-}
+)
 

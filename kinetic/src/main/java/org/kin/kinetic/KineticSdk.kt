@@ -6,6 +6,7 @@ import com.solana.networking.OkHttpNetworkingRouter
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import org.kin.kinetic.generated.api.model.*
+import org.kin.kinetic.helpers.validateKineticSdkConfig
 
 class KineticSdk {
     val sdkConfig: KineticSdkConfig
@@ -52,24 +53,24 @@ class KineticSdk {
         )
     }
 
-    suspend fun getBalance(account: String): BalanceResponse {
-        return internal.getBalance(account)
+    suspend fun getBalance(account: String, commitment: Commitment? = null): BalanceResponse {
+        return internal.getBalance(account, commitment)
     }
 
     fun getExplorerUrl(path: String): String? {
         return internal.appConfig?.environment?.explorer?.replace("{path}", path)
     }
 
-    suspend fun getHistory(account: String, mint: String? = null): List<HistoryResponse> {
-        return internal.getHistory(account, mint)
+    suspend fun getHistory(account: String, mint: String? = null, commitment: Commitment? = null): List<HistoryResponse> {
+        return internal.getHistory(account, mint, commitment)
     }
 
-    suspend fun getTokenAccounts(account: String, mint: String? = null): List<String> {
-        return internal.getTokenAccounts(account, mint)
+    suspend fun getTokenAccounts(account: String, mint: String? = null, commitment: Commitment? = null): List<String> {
+        return internal.getTokenAccounts(account, mint, commitment)
     }
 
-    suspend fun getTransaction(signature: String): GetTransactionResponse {
-        return internal.getTransaction(signature)
+    suspend fun getTransaction(signature: String, commitment: Commitment? = null): GetTransactionResponse {
+        return internal.getTransaction(signature, commitment)
     }
 
     suspend fun makeTransfer(
@@ -123,7 +124,7 @@ class KineticSdk {
         suspend fun setup(
             sdkConfig: KineticSdkConfig,
         ): KineticSdk {
-            var sdk = KineticSdk(sdkConfig)
+            var sdk = KineticSdk(validateKineticSdkConfig(sdkConfig))
             sdk.init()
             return sdk
         }

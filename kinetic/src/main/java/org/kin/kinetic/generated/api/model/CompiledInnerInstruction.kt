@@ -15,19 +15,24 @@
 
 package org.kin.kinetic.generated.api.model
 
+import org.kin.kinetic.generated.api.model.CompiledInstruction
 
 import com.squareup.moshi.Json
 
 /**
  * 
  *
- * @param lamports 
+ * @param index 
+ * @param instructions 
  */
 
-data class MinimumRentExemptionBalanceResponse (
+data class CompiledInnerInstruction (
 
-    @Json(name = "lamports")
-    val lamports: kotlin.Int
+    @Json(name = "index")
+    val index: kotlin.Int,
+
+    @Json(name = "instructions")
+    val instructions: kotlin.collections.List<CompiledInstruction>
 
 )
 

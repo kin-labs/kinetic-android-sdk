@@ -15,6 +15,8 @@
 
 package org.kin.kinetic.generated.api.model
 
+import org.kin.kinetic.generated.api.model.CompiledInnerInstruction
+import org.kin.kinetic.generated.api.model.TokenBalance
 
 import com.squareup.moshi.Json
 
@@ -37,10 +39,10 @@ data class ConfirmedTransactionMeta (
     val postBalances: kotlin.collections.List<kotlin.Int>,
 
     @Json(name = "fee")
-    val fee: java.math.BigDecimal? = null,
+    val fee: kotlin.Int? = null,
 
     @Json(name = "innerInstructions")
-    val innerInstructions: kotlin.collections.List<kotlin.String>? = null,
+    val innerInstructions: kotlin.collections.List<CompiledInnerInstruction>? = null,
 
     @Json(name = "preBalances")
     val preBalances: kotlin.collections.List<kotlin.Int>? = null,
@@ -49,10 +51,10 @@ data class ConfirmedTransactionMeta (
     val logMessages: kotlin.collections.List<kotlin.String>? = null,
 
     @Json(name = "preTokenBalances")
-    val preTokenBalances: kotlin.collections.List<kotlin.String>? = null,
+    val preTokenBalances: kotlin.collections.List<TokenBalance>? = null,
 
     @Json(name = "postTokenBalances")
-    val postTokenBalances: kotlin.collections.List<kotlin.String>? = null,
+    val postTokenBalances: kotlin.collections.List<TokenBalance>? = null,
 
     @Json(name = "err")
     val err: kotlin.Any? = null

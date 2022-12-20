@@ -15,19 +15,25 @@
 
 package org.kin.kinetic.generated.api.model
 
+import org.kin.kinetic.generated.api.model.Context
+import org.kin.kinetic.generated.api.model.SignatureStatus
 
 import com.squareup.moshi.Json
 
 /**
  * 
  *
- * @param lamports 
+ * @param context 
+ * @param `value` 
  */
 
-data class MinimumRentExemptionBalanceResponse (
+data class RpcResponseAndContext (
 
-    @Json(name = "lamports")
-    val lamports: kotlin.Int
+    @Json(name = "context")
+    val context: Context,
+
+    @Json(name = "value")
+    val `value`: SignatureStatus
 
 )
 
