@@ -17,12 +17,14 @@ class KineticSdkTest {
     @Test
     fun initialize_isCorrect(): Unit = runBlocking {
         val sdk = KineticSdk.setup(
-            TEST_APP_ENDPOINT,
-            TEST_APP_ENVIRONMENT,
-            TEST_APP_INDEX
+            KineticSdkConfig(
+                TEST_APP_ENDPOINT,
+                TEST_APP_ENVIRONMENT,
+                TEST_APP_INDEX
+            )
         )
-        assertEquals(sdk.environment, TEST_APP_ENVIRONMENT)
-        assertEquals(sdk.endpoint, TEST_APP_ENDPOINT)
-        assertEquals(sdk.index, TEST_APP_INDEX)
+        assertEquals(sdk.sdkConfig.environment, TEST_APP_ENVIRONMENT)
+        assertEquals(sdk.sdkConfig.endpoint, TEST_APP_ENDPOINT)
+        assertEquals(sdk.sdkConfig.index, TEST_APP_INDEX)
     }
 }

@@ -9,6 +9,7 @@ import org.kin.kinetic.Keypair
 import org.kin.kinetic.KineticSdk
 import org.kin.kinetic.LogLevel
 import kotlinx.coroutines.*
+import org.kin.kinetic.KineticSdkConfig
 
 class MainActivity : AppCompatActivity() {
     private lateinit var getConfigButton: Button
@@ -41,10 +42,12 @@ class MainActivity : AppCompatActivity() {
 
         kineticNetworkScope.launch {
             kinetic = KineticSdk.setup(
-                "https://sandbox.kinetic.host",
-                "devnet",
-                1,
-                mapOf("kinetic-custom-header" to "Yay nice!"),
+                KineticSdkConfig(
+                    "https://sandbox.kinetic.host",
+                    "devnet",
+                    1,
+                    mapOf("kinetic-custom-header" to "Yay nice!"),
+                )
             )
             storage = BasicAccountStorage(filesDir)
             account = storage!!.account()

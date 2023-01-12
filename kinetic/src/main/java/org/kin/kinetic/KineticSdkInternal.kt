@@ -15,19 +15,13 @@ import org.kin.kinetic.helpers.addDecimals
 import java.time.Instant
 
 class KineticSdkInternal(
-    endpoint: String,
-    environment: String,
-    index: Int,
-    headers: Map<String, String>,
+    val sdkConfig: KineticSdkConfig
 ) {
     companion object {
         val MEMO_V1_PROGRAM_ID = PublicKey("Memo1UhkJRfHyvLMcVucJwxXeuD728EqVDDwQDxFMNo")
     }
 
     val solana: Solana? = null
-    val environment: String
-    val endpoint: String
-    val index: Int
     var appConfig: AppConfig? = null
 
     val accountApi: AccountApi
@@ -38,18 +32,14 @@ class KineticSdkInternal(
     val logger = MutableStateFlow(Pair(LogLevel.INFO, "Initializing logger"))
 
     init {
-        this.endpoint = endpoint
-        this.environment = environment
-        this.index = index
+        val apiHeaders: Map<String, String> = apiBaseOptions(sdkConfig.headers)
 
-        val apiHeaders: Map<String, String> = apiBaseOptions(headers)
+        accountApi = AccountApi(basePath = sdkConfig.endpoint, headers = apiHeaders)
+        airdropApi = AirdropApi(basePath = sdkConfig.endpoint, headers = apiHeaders)
+        transactionApi = TransactionApi(basePath = sdkConfig.endpoint, headers = apiHeaders)
+        appApi = AppApi(basePath = sdkConfig.endpoint, headers = apiHeaders)
 
-        accountApi = AccountApi(basePath = endpoint, headers = apiHeaders)
-        airdropApi = AirdropApi(basePath = endpoint, headers = apiHeaders)
-        transactionApi = TransactionApi(basePath = endpoint, headers = apiHeaders)
-        appApi = AppApi(basePath = endpoint, headers = apiHeaders)
-
-        log(LogLevel.INFO, "Initializing $NAME@$VERSION\nendpoint: ${this.endpoint}, environment: ${this.environment}, index: ${this.index}")
+        log(LogLevel.INFO, "Initializing $NAME@$VERSION\nendpoint: ${sdkConfig.endpoint}, environment: ${sdkConfig.environment}, index: ${sdkConfig.index}")
     }
 
     suspend fun createAccount(
@@ -72,7 +62,7 @@ class KineticSdkInternal(
         val tx = generateCreateAccountTransaction(
             mint.addMemo,
             latestBlockhashResponse.blockhash,
-            index,
+            sdkConfig.index,
             mint.feePayer,
             mint.publicKey,
             owner.solana
@@ -82,8 +72,8 @@ class KineticSdkInternal(
 
         val createAccountRequest = CreateAccountRequest(
             commitment,
-            environment,
-            index,
+            sdkConfig.environment,
+            sdkConfig.index,
             latestBlockhashResponse.lastValidBlockHeight,
             mint.publicKey,
             Base64.encodeToString(serialized, 0),
@@ -104,7 +94,7 @@ class KineticSdkInternal(
 
     suspend fun getBalance(account: String): BalanceResponse {
         return withContext(dispatcher) {
-            accountApi.getBalance(environment, index, account)
+            accountApi.getBalance(sdkConfig.environment, sdkConfig.index, account)
         }
     }
 
@@ -112,7 +102,7 @@ class KineticSdkInternal(
         val appConfig = ensureAppConfig()
         val mint = getAppMint(appConfig, mint)
         return withContext(dispatcher) {
-            accountApi.getHistory(environment, index, account, mint.publicKey)
+            accountApi.getHistory(sdkConfig.environment, sdkConfig.index, account, mint.publicKey)
         }
     }
 
@@ -120,13 +110,13 @@ class KineticSdkInternal(
         val appConfig = ensureAppConfig()
         val mint = getAppMint(appConfig, mint)
         return withContext(dispatcher) {
-            accountApi.getTokenAccounts(environment, index, account, mint.publicKey)
+            accountApi.getTokenAccounts(sdkConfig.environment, sdkConfig.index, account, mint.publicKey)
         }
     }
 
     suspend fun getTransaction(signature: String): GetTransactionResponse {
         return withContext(dispatcher) {
-            transactionApi.getTransaction(environment, index, signature)
+            transactionApi.getTransaction(sdkConfig.environment, sdkConfig.index, signature)
         }
     }
 
@@ -160,7 +150,7 @@ class KineticSdkInternal(
             amount,
             latestBlockhashResponse.blockhash,
             destination,
-            index,
+            sdkConfig.index,
             mint.decimals,
             mint.feePayer,
             mint.publicKey,
@@ -173,8 +163,8 @@ class KineticSdkInternal(
 
         val makeTransferRequest = MakeTransferRequest(
             commitment,
-            environment,
-            index,
+            sdkConfig.environment,
+            sdkConfig.index,
             mint.publicKey,
             latestBlockhashResponse.lastValidBlockHeight,
             Base64.encodeToString(serialized, 0),
@@ -205,8 +195,8 @@ class KineticSdkInternal(
                 RequestAirdropRequest(
                     account,
                     commitment,
-                    environment,
-                    index,
+                    sdkConfig.environment,
+                    sdkConfig.index,
                     mint.publicKey,
                     amount,
                 )
@@ -216,8 +206,8 @@ class KineticSdkInternal(
 
     private fun apiBaseOptions(headers: Map<String, String>): Map<String, String> {
         return headers + mapOf(
-            Pair("kinetic-environment", environment),
-            Pair("kinetic-index", index.toString()),
+            Pair("kinetic-environment", sdkConfig.environment),
+            Pair("kinetic-index", sdkConfig.index.toString()),
             Pair("kinetic-user-agent", "$NAME@$VERSION")
         )
     }
@@ -235,7 +225,7 @@ class KineticSdkInternal(
     }
 
     private suspend fun getBlockhash(): LatestBlockhashResponse {
-        return transactionApi.getLatestBlockhash(environment, index)
+        return transactionApi.getLatestBlockhash(sdkConfig.environment, sdkConfig.index)
     }
 
     private fun validateDestination(appConfig: AppConfig, destination: String) {
