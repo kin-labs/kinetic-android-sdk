@@ -100,7 +100,7 @@ publishing {
         maven(MavenPublication) {
             groupId = "org.kin"
             artifactId = "kinetic"
-            version = "1.0.0-rc.8"
+            version = "1.0.0-rc.12"
 
             afterEvaluate {
                 from components.release
