@@ -21,29 +21,13 @@ import com.squareup.moshi.Json
 /**
  * 
  *
- * @param signature 
  * @param slot 
- * @param err 
- * @param memo 
- * @param blockTime 
  */
 
-data class ConfirmedSignatureInfo (
-
-    @Json(name = "signature")
-    val signature: kotlin.String,
+data class Context (
 
     @Json(name = "slot")
-    val slot: kotlin.Int? = null,
-
-    @Json(name = "err")
-    val err: kotlin.String? = null,
-
-    @Json(name = "memo")
-    val memo: kotlin.String? = null,
-
-    @Json(name = "blockTime")
-    val blockTime: kotlin.Int? = null
+    val slot: kotlin.Int? = null
 
 )
 

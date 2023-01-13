@@ -44,15 +44,16 @@ class KineticSdkInternal(
 
     suspend fun createAccount(
         owner: Keypair,
-        commitment: Commitment,
+        commitment: Commitment?,
         mint: String?,
         referenceId: String?,
         referenceType: String?,
     ): Transaction {
         val appConfig = ensureAppConfig()
+        val commitment = getCommitment(commitment)
         val mint = getAppMint(appConfig, mint)
 
-        val accounts = this@KineticSdkInternal.getTokenAccounts(owner.publicKey, mint.publicKey)
+        val accounts = this@KineticSdkInternal.getTokenAccounts(owner.publicKey, commitment, mint.publicKey)
         if (!accounts.isEmpty()) {
             error("Token account already exists")
         }
@@ -92,31 +93,39 @@ class KineticSdkInternal(
         return appConfig
     }
 
-    suspend fun getBalance(account: String): BalanceResponse {
+    suspend fun getBalance(account: String, commitment: Commitment?): BalanceResponse {
+        val commitment = getCommitment(commitment)
+
         return withContext(dispatcher) {
-            accountApi.getBalance(sdkConfig.environment, sdkConfig.index, account)
+            accountApi.getBalance(sdkConfig.environment, sdkConfig.index, account, commitment)
         }
     }
 
-    suspend fun getHistory(account: String, mint: String?): List<HistoryResponse> {
+    suspend fun getHistory(account: String, commitment: Commitment?, mint: String?): List<HistoryResponse> {
         val appConfig = ensureAppConfig()
+        val commitment = getCommitment(commitment)
         val mint = getAppMint(appConfig, mint)
+
         return withContext(dispatcher) {
-            accountApi.getHistory(sdkConfig.environment, sdkConfig.index, account, mint.publicKey)
+            accountApi.getHistory(sdkConfig.environment, sdkConfig.index, account, mint.publicKey, commitment)
         }
     }
 
-    suspend fun getTokenAccounts(account: String, mint: String?): List<String> {
+    suspend fun getTokenAccounts(account: String, commitment: Commitment?, mint: String?): List<String> {
         val appConfig = ensureAppConfig()
+        val commitment = getCommitment(commitment)
         val mint = getAppMint(appConfig, mint)
+
         return withContext(dispatcher) {
-            accountApi.getTokenAccounts(sdkConfig.environment, sdkConfig.index, account, mint.publicKey)
+            accountApi.getTokenAccounts(sdkConfig.environment, sdkConfig.index, account, mint.publicKey, commitment)
         }
     }
 
-    suspend fun getTransaction(signature: String): GetTransactionResponse {
+    suspend fun getTransaction(signature: String, commitment: Commitment?): GetTransactionResponse {
+        val commitment = getCommitment(commitment)
+
         return withContext(dispatcher) {
-            transactionApi.getTransaction(sdkConfig.environment, sdkConfig.index, signature)
+            transactionApi.getTransaction(sdkConfig.environment, sdkConfig.index, signature, commitment)
         }
     }
 
@@ -124,7 +133,7 @@ class KineticSdkInternal(
         amount: String,
         destination: String,
         owner: Keypair,
-        commitment: Commitment = Commitment.confirmed,
+        commitment: Commitment?,
         mint: String?,
         referenceId: String?,
         referenceType: String?,
@@ -132,12 +141,13 @@ class KineticSdkInternal(
         type: KinBinaryMemo.TransactionType,
     ): Transaction {
         val appConfig = ensureAppConfig()
+        val commitment = getCommitment(commitment)
         val mint = getAppMint(appConfig, mint)
         val amount = addDecimals(amount, mint.decimals).toString()
 
         this.validateDestination(appConfig, destination)
 
-        val accounts = this@KineticSdkInternal.getTokenAccounts(destination, mint.publicKey)
+        val accounts = this@KineticSdkInternal.getTokenAccounts(destination, commitment, mint.publicKey)
         if (accounts.isEmpty() && !senderCreate) {
             error("Destination account does not exist")
         }
@@ -180,10 +190,11 @@ class KineticSdkInternal(
     suspend fun requestAirdrop(
         account: String,
         amount: String?,
-        commitment: Commitment,
+        commitment: Commitment?,
         mint: String?,
     ): RequestAirdropResponse {
         val appConfig = ensureAppConfig()
+        val commitment = getCommitment(commitment)
         val mint = getAppMint(appConfig, mint)
         var amount = amount
         if (amount != null) {
@@ -226,6 +237,10 @@ class KineticSdkInternal(
 
     private suspend fun getBlockhash(): LatestBlockhashResponse {
         return transactionApi.getLatestBlockhash(sdkConfig.environment, sdkConfig.index)
+    }
+
+    private fun getCommitment(commitment: Commitment?): Commitment {
+        return commitment ?: sdkConfig.commitment ?: Commitment.confirmed
     }
 
     private fun validateDestination(appConfig: AppConfig, destination: String) {

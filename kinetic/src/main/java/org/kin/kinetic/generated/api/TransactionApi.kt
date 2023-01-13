@@ -19,6 +19,7 @@ import java.io.IOException
 import okhttp3.OkHttpClient
 import okhttp3.HttpUrl
 
+import org.kin.kinetic.generated.api.model.Commitment
 import org.kin.kinetic.generated.api.model.GetTransactionResponse
 import org.kin.kinetic.generated.api.model.LatestBlockhashResponse
 import org.kin.kinetic.generated.api.model.MakeTransferRequest
@@ -207,6 +208,7 @@ class TransactionApi(basePath: kotlin.String = defaultBasePath, client: OkHttpCl
      * @param environment 
      * @param index 
      * @param signature 
+     * @param commitment 
      * @return GetTransactionResponse
      * @throws IllegalStateException If the request is not correctly configured
      * @throws IOException Rethrows the OkHttp execute method exception
@@ -216,8 +218,8 @@ class TransactionApi(basePath: kotlin.String = defaultBasePath, client: OkHttpCl
      */
     @Suppress("UNCHECKED_CAST")
     @Throws(IllegalStateException::class, IOException::class, UnsupportedOperationException::class, ClientException::class, ServerException::class)
-    fun getTransaction(environment: kotlin.String, index: kotlin.Int, signature: kotlin.String) : GetTransactionResponse {
-        val localVarResponse = getTransactionWithHttpInfo(environment = environment, index = index, signature = signature)
+    fun getTransaction(environment: kotlin.String, index: kotlin.Int, signature: kotlin.String, commitment: Commitment) : GetTransactionResponse {
+        val localVarResponse = getTransactionWithHttpInfo(environment = environment, index = index, signature = signature, commitment = commitment)
 
         return when (localVarResponse.responseType) {
             ResponseType.Success -> (localVarResponse as Success<*>).data as GetTransactionResponse
@@ -240,14 +242,15 @@ class TransactionApi(basePath: kotlin.String = defaultBasePath, client: OkHttpCl
      * @param environment 
      * @param index 
      * @param signature 
+     * @param commitment 
      * @return ApiResponse<GetTransactionResponse?>
      * @throws IllegalStateException If the request is not correctly configured
      * @throws IOException Rethrows the OkHttp execute method exception
      */
     @Suppress("UNCHECKED_CAST")
     @Throws(IllegalStateException::class, IOException::class)
-    fun getTransactionWithHttpInfo(environment: kotlin.String, index: kotlin.Int, signature: kotlin.String) : ApiResponse<GetTransactionResponse?> {
-        val localVariableConfig = getTransactionRequestConfig(environment = environment, index = index, signature = signature)
+    fun getTransactionWithHttpInfo(environment: kotlin.String, index: kotlin.Int, signature: kotlin.String, commitment: Commitment) : ApiResponse<GetTransactionResponse?> {
+        val localVariableConfig = getTransactionRequestConfig(environment = environment, index = index, signature = signature, commitment = commitment)
 
         return request<Unit, GetTransactionResponse>(
             localVariableConfig
@@ -260,11 +263,15 @@ class TransactionApi(basePath: kotlin.String = defaultBasePath, client: OkHttpCl
      * @param environment 
      * @param index 
      * @param signature 
+     * @param commitment 
      * @return RequestConfig
      */
-    fun getTransactionRequestConfig(environment: kotlin.String, index: kotlin.Int, signature: kotlin.String) : RequestConfig<Unit> {
+    fun getTransactionRequestConfig(environment: kotlin.String, index: kotlin.Int, signature: kotlin.String, commitment: Commitment) : RequestConfig<Unit> {
         val localVariableBody = null
-        val localVariableQuery: MultiValueMap = mutableMapOf()
+        val localVariableQuery: MultiValueMap = mutableMapOf<kotlin.String, kotlin.collections.List<kotlin.String>>()
+            .apply {
+                put("commitment", listOf(commitment.toString()))
+            }
         val localVariableHeaders: MutableMap<String, String> = mutableMapOf()
         localVariableHeaders["Accept"] = "application/json"
 

@@ -21,13 +21,21 @@ import com.squareup.moshi.Json
 /**
  * 
  *
- * @param lamports 
+ * @param programIdIndex 
+ * @param accounts 
+ * @param `data` 
  */
 
-data class MinimumRentExemptionBalanceResponse (
+data class CompiledInstruction (
 
-    @Json(name = "lamports")
-    val lamports: kotlin.Int
+    @Json(name = "programIdIndex")
+    val programIdIndex: kotlin.Int,
+
+    @Json(name = "accounts")
+    val accounts: kotlin.collections.List<kotlin.Int>,
+
+    @Json(name = "data")
+    val `data`: kotlin.String
 
 )
 
