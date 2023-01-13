@@ -7,11 +7,10 @@ fun validateKineticSdkConfig(sdkConfig: KineticSdkConfig): KineticSdkConfig {
     if (!sdkConfig.endpoint.startsWith("http")) {
         throw RuntimeException("validateKineticSdkConfig: the endpoint should start with http or https.")
     }
-    val commitment = sdkConfig.commitment ?: Commitment.confirmed
     val endpoint = sdkConfig.endpoint.removeSuffix("/")
 
     return KineticSdkConfig(
-        commitment = commitment,
+        commitment = sdkConfig.commitment,
         endpoint = endpoint,
         environment = sdkConfig.environment,
         index = sdkConfig.index,

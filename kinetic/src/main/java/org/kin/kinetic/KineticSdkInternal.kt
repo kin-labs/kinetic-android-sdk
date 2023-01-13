@@ -44,16 +44,16 @@ class KineticSdkInternal(
 
     suspend fun createAccount(
         owner: Keypair,
-        commitment: Commitment,
+        commitment: Commitment?,
         mint: String?,
         referenceId: String?,
         referenceType: String?,
     ): Transaction {
         val appConfig = ensureAppConfig()
-        var commitment = getCommitment(commitment)
+        val commitment = getCommitment(commitment)
         val mint = getAppMint(appConfig, mint)
 
-        val accounts = this@KineticSdkInternal.getTokenAccounts(owner.publicKey, mint.publicKey, commitment)
+        val accounts = this@KineticSdkInternal.getTokenAccounts(owner.publicKey, commitment, mint.publicKey)
         if (!accounts.isEmpty()) {
             error("Token account already exists")
         }
@@ -94,16 +94,16 @@ class KineticSdkInternal(
     }
 
     suspend fun getBalance(account: String, commitment: Commitment?): BalanceResponse {
-        var commitment = getCommitment(commitment)
+        val commitment = getCommitment(commitment)
 
         return withContext(dispatcher) {
             accountApi.getBalance(sdkConfig.environment, sdkConfig.index, account, commitment)
         }
     }
 
-    suspend fun getHistory(account: String, mint: String?, commitment: Commitment?): List<HistoryResponse> {
+    suspend fun getHistory(account: String, commitment: Commitment?, mint: String?): List<HistoryResponse> {
         val appConfig = ensureAppConfig()
-        var commitment = getCommitment(commitment)
+        val commitment = getCommitment(commitment)
         val mint = getAppMint(appConfig, mint)
 
         return withContext(dispatcher) {
@@ -111,9 +111,9 @@ class KineticSdkInternal(
         }
     }
 
-    suspend fun getTokenAccounts(account: String, mint: String?, commitment: Commitment?): List<String> {
+    suspend fun getTokenAccounts(account: String, commitment: Commitment?, mint: String?): List<String> {
         val appConfig = ensureAppConfig()
-        var commitment = getCommitment(commitment)
+        val commitment = getCommitment(commitment)
         val mint = getAppMint(appConfig, mint)
 
         return withContext(dispatcher) {
@@ -122,7 +122,7 @@ class KineticSdkInternal(
     }
 
     suspend fun getTransaction(signature: String, commitment: Commitment?): GetTransactionResponse {
-        var commitment = getCommitment(commitment)
+        val commitment = getCommitment(commitment)
 
         return withContext(dispatcher) {
             transactionApi.getTransaction(sdkConfig.environment, sdkConfig.index, signature, commitment)
@@ -133,7 +133,7 @@ class KineticSdkInternal(
         amount: String,
         destination: String,
         owner: Keypair,
-        commitment: Commitment = Commitment.confirmed,
+        commitment: Commitment?,
         mint: String?,
         referenceId: String?,
         referenceType: String?,
@@ -141,13 +141,13 @@ class KineticSdkInternal(
         type: KinBinaryMemo.TransactionType,
     ): Transaction {
         val appConfig = ensureAppConfig()
+        val commitment = getCommitment(commitment)
         val mint = getAppMint(appConfig, mint)
-        var commitment = getCommitment(commitment)
         val amount = addDecimals(amount, mint.decimals).toString()
 
         this.validateDestination(appConfig, destination)
 
-        val accounts = this@KineticSdkInternal.getTokenAccounts(destination, mint.publicKey, commitment)
+        val accounts = this@KineticSdkInternal.getTokenAccounts(destination, commitment, mint.publicKey)
         if (accounts.isEmpty() && !senderCreate) {
             error("Destination account does not exist")
         }
@@ -190,10 +190,11 @@ class KineticSdkInternal(
     suspend fun requestAirdrop(
         account: String,
         amount: String?,
-        commitment: Commitment,
+        commitment: Commitment?,
         mint: String?,
     ): RequestAirdropResponse {
         val appConfig = ensureAppConfig()
+        val commitment = getCommitment(commitment)
         val mint = getAppMint(appConfig, mint)
         var amount = amount
         if (amount != null) {

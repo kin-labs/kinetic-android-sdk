@@ -39,7 +39,7 @@ class KineticSdk {
 
     suspend fun createAccount(
         owner: Keypair,
-        commitment: Commitment = Commitment.confirmed,
+        commitment: Commitment? = null,
         mint: String? = null,
         referenceId: String? = null,
         referenceType: String? = null
@@ -61,12 +61,12 @@ class KineticSdk {
         return internal.appConfig?.environment?.explorer?.replace("{path}", path)
     }
 
-    suspend fun getHistory(account: String, mint: String? = null, commitment: Commitment? = null): List<HistoryResponse> {
-        return internal.getHistory(account, mint, commitment)
+    suspend fun getHistory(account: String, commitment: Commitment? = null, mint: String? = null): List<HistoryResponse> {
+        return internal.getHistory(account, commitment, mint)
     }
 
-    suspend fun getTokenAccounts(account: String, mint: String? = null, commitment: Commitment? = null): List<String> {
-        return internal.getTokenAccounts(account, mint, commitment)
+    suspend fun getTokenAccounts(account: String, commitment: Commitment? = null, mint: String? = null): List<String> {
+        return internal.getTokenAccounts(account, commitment, mint)
     }
 
     suspend fun getTransaction(signature: String, commitment: Commitment? = null): GetTransactionResponse {
@@ -77,7 +77,7 @@ class KineticSdk {
         amount: String,
         destination: String,
         owner: Keypair,
-        commitment: Commitment = Commitment.confirmed,
+        commitment: Commitment? = null,
         mint: String? = null,
         referenceId: String? = null,
         referenceType: String? = null,
@@ -100,7 +100,7 @@ class KineticSdk {
     suspend fun requestAirdrop(
         account: String,
         amount: String? = null,
-        commitment: Commitment = Commitment.finalized,
+        commitment: Commitment? = null,
         mint: String? = null
     ): RequestAirdropResponse {
         return internal.requestAirdrop(
