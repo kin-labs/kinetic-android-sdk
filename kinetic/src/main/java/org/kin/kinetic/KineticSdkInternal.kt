@@ -39,7 +39,7 @@ class KineticSdkInternal(
         transactionApi = TransactionApi(basePath = sdkConfig.endpoint, headers = apiHeaders)
         appApi = AppApi(basePath = sdkConfig.endpoint, headers = apiHeaders)
 
-        log(LogLevel.INFO, "Initializing $NAME@$VERSION\nendpoint: ${sdkConfig.endpoint}, environment: ${sdkConfig.environment}, index: ${sdkConfig.index}")
+        log(LogLevel.INFO, "Initializing ${BuildConfig.LIBRARY_NAME}@${BuildConfig.LIBRARY_VERSION}\nendpoint: ${sdkConfig.endpoint}, environment: ${sdkConfig.environment}, index: ${sdkConfig.index}")
     }
 
     suspend fun createAccount(
@@ -219,7 +219,7 @@ class KineticSdkInternal(
         return headers + mapOf(
             Pair("kinetic-environment", sdkConfig.environment),
             Pair("kinetic-index", sdkConfig.index.toString()),
-            Pair("kinetic-user-agent", "$NAME@$VERSION")
+            Pair("kinetic-user-agent", "${BuildConfig.LIBRARY_NAME}@${BuildConfig.LIBRARY_VERSION}")
         )
     }
 
@@ -250,6 +250,6 @@ class KineticSdkInternal(
     }
 
     private fun log(level: LogLevel, message: String) {
-        logger.update { Pair(level, "$NAME::${Instant.now()}::${message}") }
+        logger.update { Pair(level, "${BuildConfig.LIBRARY_NAME}::${Instant.now()}::${message}") }
     }
 }
