@@ -88,6 +88,14 @@ class MainActivity : AppCompatActivity() {
         }
 
         getBalanceButton.setOnClickListener {
+            val list = Keypair.fromMnemonicSet(listOf("pill", "tomorrow", "foster", "begin", "walnut", "borrow", "virtual", "kick", "shift", "mutual", "shoe", "scatter"))
+            val one = Keypair.fromMnemonic(listOf("pill", "tomorrow", "foster", "begin", "walnut", "borrow", "virtual", "kick", "shift", "mutual", "shoe", "scatter"))
+            Log.d("TAG", list[0].publicKey)
+            Log.d("TAG", list[1].publicKey)
+            Log.d("TAG", list[2].publicKey)
+            Log.d("TAG", list[3].publicKey)
+            Log.d("TAG", one.publicKey)
+            Log.d("TAG", list.count().toString())
             kineticNetworkScope.launch {
                 val res = kinetic?.getBalance(account!!.publicKey)
                 runOnUiThread { kinBalanceText.text = res.toString() }

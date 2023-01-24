@@ -2,7 +2,7 @@ package org.kin.kinetic
 
 import org.kin.kinetic.helpers.getSolanaRPCEndpoint
 import com.solana.Solana
-import com.solana.networking.OkHttpNetworkingRouter
+import com.solana.networking.HttpNetworkingRouter
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import org.kin.kinetic.generated.api.model.*
@@ -115,7 +115,7 @@ class KineticSdk {
         val config = internal.getAppConfig(sdkConfig.environment, sdkConfig.index)
         val rpcEndpoint = if (sdkConfig.solanaRpcEndpoint != null) getSolanaRPCEndpoint(sdkConfig.solanaRpcEndpoint)
             else getSolanaRPCEndpoint(config.environment.cluster.endpoint)
-        val networkingRouter = OkHttpNetworkingRouter(rpcEndpoint)
+        val networkingRouter = HttpNetworkingRouter(rpcEndpoint)
         solana = Solana(networkingRouter)
         return config
     }
