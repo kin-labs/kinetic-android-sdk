@@ -12,21 +12,23 @@ import kotlinx.coroutines.*
 import org.kin.kinetic.KineticSdkConfig
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var getConfigButton: Button
-    private lateinit var serverConfigText: TextView
-    private lateinit var getBalanceButton: Button
-    private lateinit var kinBalanceText: TextView
-    private lateinit var getTokenAccountsButton: Button
-    private lateinit var tokenAccountsText: TextView
-    private lateinit var getAccountHistoryButton: Button
     private lateinit var accountHistoryText: TextView
     private lateinit var airdropButton: Button
     private lateinit var airdropText: TextView
     private lateinit var createAccountButton: Button
     private lateinit var createAccountText: TextView
+    private lateinit var getAccountHistoryButton: Button
+    private lateinit var getAccountInfoButton: Button
+    private lateinit var getBalanceButton: Button
+    private lateinit var getConfigButton: Button
+    private lateinit var getTokenAccountsButton: Button
+    private lateinit var getTransactionButton: Button
+    private lateinit var kinAccountInfoText: TextView
+    private lateinit var kinBalanceText: TextView
     private lateinit var makeTransferButton: Button
     private lateinit var makeTransferText: TextView
-    private lateinit var getTransactionButton: Button
+    private lateinit var serverConfigText: TextView
+    private lateinit var tokenAccountsText: TextView
     private lateinit var transactionText: TextView
 
     private var kinetic: KineticSdk? = null
@@ -63,27 +65,35 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        getConfigButton = findViewById(R.id.get_config_button)
-        serverConfigText = findViewById(R.id.server_config_text)
-        getBalanceButton = findViewById(R.id.get_balance_button)
-        kinBalanceText = findViewById(R.id.kin_balance_text)
-        getTokenAccountsButton = findViewById(R.id.get_token_accounts_button)
-        tokenAccountsText = findViewById(R.id.token_accounts_text)
-        getAccountHistoryButton = findViewById(R.id.get_account_history_button)
         accountHistoryText = findViewById(R.id.account_history_text)
         airdropButton = findViewById(R.id.airdrop_button)
         airdropText = findViewById(R.id.airdrop_text)
         createAccountButton = findViewById(R.id.create_account_button)
         createAccountText = findViewById(R.id.create_account_text)
+        getAccountHistoryButton = findViewById(R.id.get_account_history_button)
+        getBalanceButton = findViewById(R.id.get_balance_button)
+        getConfigButton = findViewById(R.id.get_config_button)
+        getTokenAccountsButton = findViewById(R.id.get_token_accounts_button)
+        getTransactionButton = findViewById(R.id.get_transaction_button)
+        kinAccountInfoText = findViewById(R.id.kin_account_info_text)
+        kinBalanceText = findViewById(R.id.kin_balance_text)
         makeTransferButton = findViewById(R.id.make_transfer_button)
         makeTransferText = findViewById(R.id.make_transfer_text)
-        getTransactionButton = findViewById(R.id.get_transaction_button)
+        serverConfigText = findViewById(R.id.server_config_text)
+        tokenAccountsText = findViewById(R.id.token_accounts_text)
         transactionText = findViewById(R.id.transaction_text)
 
         getConfigButton.setOnClickListener {
             kineticNetworkScope.launch {
                 val res = kinetic?.init()
                 runOnUiThread { serverConfigText.text = res.toString() }
+            }
+        }
+
+        getAccountInfoButton.setOnClickListener {
+            kineticNetworkScope.launch {
+                val res = kinetic?.getAccountInfo(account!!.publicKey)
+                runOnUiThread { kinAccountInfoText.text = res.toString() }
             }
         }
 

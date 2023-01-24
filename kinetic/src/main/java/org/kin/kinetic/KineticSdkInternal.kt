@@ -42,6 +42,33 @@ class KineticSdkInternal(
         log(LogLevel.INFO, "Initializing ${BuildConfig.LIBRARY_NAME}@${BuildConfig.LIBRARY_VERSION}\nendpoint: ${sdkConfig.endpoint}, environment: ${sdkConfig.environment}, index: ${sdkConfig.index}")
     }
 
+    suspend fun closeAccount(
+        account: String,
+        commitment: Commitment,
+        mint: String?,
+        referenceId: String?,
+        referenceType: String?,
+    ): Transaction {
+        val appConfig = ensureAppConfig()
+        var commitment = getCommitment(commitment)
+        val mint = getAppMint(appConfig, mint)
+
+        val closeAccountRequest = CloseAccountRequest(
+            account = account,
+            commitment = commitment,
+            environment = sdkConfig.environment,
+            index = sdkConfig.index,
+            mint = mint.publicKey,
+            referenceId = referenceId,
+            referenceType = referenceType
+        )
+
+        return withContext(dispatcher) {
+            accountApi.closeAccount(closeAccountRequest)
+        }
+    }
+
+
     suspend fun createAccount(
         owner: Keypair,
         commitment: Commitment?,
@@ -84,6 +111,14 @@ class KineticSdkInternal(
 
         return withContext(dispatcher) {
             accountApi.createAccount(createAccountRequest)
+        }
+    }
+
+    suspend fun getAccountInfo(account: String, commitment: Commitment?): AccountInfo {
+        var commitment = getCommitment(commitment)
+
+        return withContext(dispatcher) {
+            accountApi.getAccountInfo(sdkConfig.environment, sdkConfig.index, account, commitment)
         }
     }
 
