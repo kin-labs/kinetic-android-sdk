@@ -37,6 +37,22 @@ class KineticSdk {
             return this.sdkConfig.solanaRpcEndpoint
         }
 
+    suspend fun closeAccount(
+        account: String,
+        commitment: Commitment = Commitment.confirmed,
+        mint: String? = null,
+        referenceId: String? = null,
+        referenceType: String? = null
+    ): Transaction {
+        return internal.closeAccount(
+            account,
+            commitment,
+            mint,
+            referenceId,
+            referenceType
+        )
+    }
+
     suspend fun createAccount(
         owner: Keypair,
         commitment: Commitment = Commitment.confirmed,
@@ -51,6 +67,10 @@ class KineticSdk {
             referenceId,
             referenceType
         )
+    }
+
+    suspend fun getAccountInfo(account: String, commitment: Commitment? = null): AccountInfo {
+        return internal.getAccountInfo(account, commitment)
     }
 
     suspend fun getBalance(account: String, commitment: Commitment? = null): BalanceResponse {
