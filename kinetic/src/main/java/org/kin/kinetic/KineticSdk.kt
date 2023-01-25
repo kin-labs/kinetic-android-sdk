@@ -39,7 +39,7 @@ class KineticSdk {
 
     suspend fun closeAccount(
         account: String,
-        commitment: Commitment = Commitment.confirmed,
+        commitment: Commitment? = null,
         mint: String? = null,
         referenceId: String? = null,
         referenceType: String? = null
@@ -69,8 +69,8 @@ class KineticSdk {
         )
     }
 
-    suspend fun getAccountInfo(account: String, commitment: Commitment? = null): AccountInfo {
-        return internal.getAccountInfo(account, commitment)
+    suspend fun getAccountInfo(account: String, commitment: Commitment? = null, mint: String? = null): AccountInfo {
+        return internal.getAccountInfo(account, commitment, mint)
     }
 
     suspend fun getBalance(account: String, commitment: Commitment? = null): BalanceResponse {

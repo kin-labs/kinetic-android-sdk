@@ -15,6 +15,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var accountHistoryText: TextView
     private lateinit var airdropButton: Button
     private lateinit var airdropText: TextView
+    private lateinit var closeAccountButton: Button
+    private lateinit var closeAccountText: TextView
     private lateinit var createAccountButton: Button
     private lateinit var createAccountText: TextView
     private lateinit var getAccountHistoryButton: Button
@@ -68,9 +70,12 @@ class MainActivity : AppCompatActivity() {
         accountHistoryText = findViewById(R.id.account_history_text)
         airdropButton = findViewById(R.id.airdrop_button)
         airdropText = findViewById(R.id.airdrop_text)
+        closeAccountButton = findViewById(R.id.close_account_button)
+        closeAccountText = findViewById(R.id.close_account_text)
         createAccountButton = findViewById(R.id.create_account_button)
         createAccountText = findViewById(R.id.create_account_text)
         getAccountHistoryButton = findViewById(R.id.get_account_history_button)
+        getAccountInfoButton = findViewById(R.id.get_account_info_button)
         getBalanceButton = findViewById(R.id.get_balance_button)
         getConfigButton = findViewById(R.id.get_config_button)
         getTokenAccountsButton = findViewById(R.id.get_token_accounts_button)
@@ -98,14 +103,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         getBalanceButton.setOnClickListener {
-            val list = Keypair.fromMnemonicSet(listOf("pill", "tomorrow", "foster", "begin", "walnut", "borrow", "virtual", "kick", "shift", "mutual", "shoe", "scatter"))
-            val one = Keypair.fromMnemonic(listOf("pill", "tomorrow", "foster", "begin", "walnut", "borrow", "virtual", "kick", "shift", "mutual", "shoe", "scatter"))
-            Log.d("TAG", list[0].publicKey)
-            Log.d("TAG", list[1].publicKey)
-            Log.d("TAG", list[2].publicKey)
-            Log.d("TAG", list[3].publicKey)
-            Log.d("TAG", one.publicKey)
-            Log.d("TAG", list.count().toString())
             kineticNetworkScope.launch {
                 val res = kinetic?.getBalance(account!!.publicKey)
                 runOnUiThread { kinBalanceText.text = res.toString() }
@@ -130,6 +127,13 @@ class MainActivity : AppCompatActivity() {
             kineticNetworkScope.launch {
                 val res = kinetic?.requestAirdrop(account!!.publicKey)
                 runOnUiThread { airdropText.text = res.toString() }
+            }
+        }
+
+        closeAccountButton.setOnClickListener {
+            kineticNetworkScope.launch {
+                val res = kinetic?.closeAccount(account!!.publicKey)
+                runOnUiThread { closeAccountText.text = res.toString() }
             }
         }
 

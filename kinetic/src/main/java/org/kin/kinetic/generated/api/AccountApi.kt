@@ -199,6 +199,7 @@ class AccountApi(basePath: kotlin.String = defaultBasePath, client: OkHttpClient
      * @param environment 
      * @param index 
      * @param accountId 
+     * @param mint 
      * @param commitment 
      * @return AccountInfo
      * @throws IllegalStateException If the request is not correctly configured
@@ -209,8 +210,8 @@ class AccountApi(basePath: kotlin.String = defaultBasePath, client: OkHttpClient
      */
     @Suppress("UNCHECKED_CAST")
     @Throws(IllegalStateException::class, IOException::class, UnsupportedOperationException::class, ClientException::class, ServerException::class)
-    fun getAccountInfo(environment: kotlin.String, index: kotlin.Int, accountId: kotlin.String, commitment: Commitment) : AccountInfo {
-        val localVarResponse = getAccountInfoWithHttpInfo(environment = environment, index = index, accountId = accountId, commitment = commitment)
+    fun getAccountInfo(environment: kotlin.String, index: kotlin.Int, accountId: kotlin.String, mint: kotlin.String, commitment: Commitment) : AccountInfo {
+        val localVarResponse = getAccountInfoWithHttpInfo(environment = environment, index = index, accountId = accountId, mint = mint, commitment = commitment)
 
         return when (localVarResponse.responseType) {
             ResponseType.Success -> (localVarResponse as Success<*>).data as AccountInfo
@@ -233,6 +234,7 @@ class AccountApi(basePath: kotlin.String = defaultBasePath, client: OkHttpClient
      * @param environment 
      * @param index 
      * @param accountId 
+     * @param mint 
      * @param commitment 
      * @return ApiResponse<AccountInfo?>
      * @throws IllegalStateException If the request is not correctly configured
@@ -240,8 +242,8 @@ class AccountApi(basePath: kotlin.String = defaultBasePath, client: OkHttpClient
      */
     @Suppress("UNCHECKED_CAST")
     @Throws(IllegalStateException::class, IOException::class)
-    fun getAccountInfoWithHttpInfo(environment: kotlin.String, index: kotlin.Int, accountId: kotlin.String, commitment: Commitment) : ApiResponse<AccountInfo?> {
-        val localVariableConfig = getAccountInfoRequestConfig(environment = environment, index = index, accountId = accountId, commitment = commitment)
+    fun getAccountInfoWithHttpInfo(environment: kotlin.String, index: kotlin.Int, accountId: kotlin.String, mint: kotlin.String, commitment: Commitment) : ApiResponse<AccountInfo?> {
+        val localVariableConfig = getAccountInfoRequestConfig(environment = environment, index = index, accountId = accountId, mint = mint, commitment = commitment)
 
         return request<Unit, AccountInfo>(
             localVariableConfig
@@ -254,10 +256,11 @@ class AccountApi(basePath: kotlin.String = defaultBasePath, client: OkHttpClient
      * @param environment 
      * @param index 
      * @param accountId 
+     * @param mint 
      * @param commitment 
      * @return RequestConfig
      */
-    fun getAccountInfoRequestConfig(environment: kotlin.String, index: kotlin.Int, accountId: kotlin.String, commitment: Commitment) : RequestConfig<Unit> {
+    fun getAccountInfoRequestConfig(environment: kotlin.String, index: kotlin.Int, accountId: kotlin.String, mint: kotlin.String, commitment: Commitment) : RequestConfig<Unit> {
         val localVariableBody = null
         val localVariableQuery: MultiValueMap = mutableMapOf<kotlin.String, kotlin.collections.List<kotlin.String>>()
             .apply {
@@ -268,7 +271,7 @@ class AccountApi(basePath: kotlin.String = defaultBasePath, client: OkHttpClient
 
         return RequestConfig(
             method = RequestMethod.GET,
-            path = "/api/account/info/{environment}/{index}/{accountId}".replace("{"+"environment"+"}", encodeURIComponent(environment.toString())).replace("{"+"index"+"}", encodeURIComponent(index.toString())).replace("{"+"accountId"+"}", encodeURIComponent(accountId.toString())),
+            path = "/api/account/info/{environment}/{index}/{accountId}/{mint}".replace("{"+"environment"+"}", encodeURIComponent(environment.toString())).replace("{"+"index"+"}", encodeURIComponent(index.toString())).replace("{"+"accountId"+"}", encodeURIComponent(accountId.toString())).replace("{"+"mint"+"}", encodeURIComponent(mint.toString())),
             query = localVariableQuery,
             headers = localVariableHeaders,
             body = localVariableBody

@@ -44,7 +44,7 @@ class KineticSdkInternal(
 
     suspend fun closeAccount(
         account: String,
-        commitment: Commitment,
+        commitment: Commitment?,
         mint: String?,
         referenceId: String?,
         referenceType: String?,
@@ -114,11 +114,13 @@ class KineticSdkInternal(
         }
     }
 
-    suspend fun getAccountInfo(account: String, commitment: Commitment?): AccountInfo {
-        var commitment = getCommitment(commitment)
+    suspend fun getAccountInfo(account: String, commitment: Commitment?, mint: String?): AccountInfo {
+        val appConfig = ensureAppConfig()
+        val commitment = getCommitment(commitment)
+        val mint = getAppMint(appConfig, mint)
 
         return withContext(dispatcher) {
-            accountApi.getAccountInfo(sdkConfig.environment, sdkConfig.index, account, commitment)
+            accountApi.getAccountInfo(sdkConfig.environment, sdkConfig.index, account, mint.publicKey, commitment)
         }
     }
 

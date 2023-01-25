@@ -132,6 +132,19 @@
             android:layout_height="wrap_content"
             android:textAlignment="center"
             android:textSize="9sp" />
+
+        <Button
+            android:id="@+id/close_account_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Close Account" />
+
+        <TextView
+            android:id="@+id/close_account_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textSize="9sp" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
