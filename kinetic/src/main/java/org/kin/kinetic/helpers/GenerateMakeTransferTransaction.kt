@@ -9,21 +9,23 @@ internal fun generateMakeTransferTransaction(
     amount: String,
     blockhash: String,
     destination: String,
+    destinationTokenAccount: String,
     index: Int,
     mintDecimals: Int,
     mintFeePayer: String,
     mintPublicKey: String,
     owner: Account,
+    ownerTokenAccount: String,
     senderCreate: Boolean = false,
     type: KinBinaryMemo.TransactionType
 ): Transaction {
     // Create objects from Response
-    val mintKey = PublicKey(mintPublicKey)
+    val destinationPublicKey = PublicKey(destination)
+    val destinationTokenAccountPublicKey = PublicKey(destinationTokenAccount)
     val feePayerKey = PublicKey(mintFeePayer)
+    val mintKey = PublicKey(mintPublicKey)
     val ownerPublicKey = owner.publicKey
-
-    val ownerTokenAccount = getAssociatedTokenAddress(ownerPublicKey, mintKey)
-    val destinationTokenAccount = getAssociatedTokenAddress(PublicKey(destination), mintKey)
+    val ownerTokenAccountPublicKey = PublicKey(ownerTokenAccount)
 
     var instructions = emptyArray<TransactionInstruction>()
 
@@ -34,15 +36,15 @@ internal fun generateMakeTransferTransaction(
     if (senderCreate) {
         instructions += createAssociatedTokenAccountInstruction(
             feePayerKey,
-            destinationTokenAccount,
-            PublicKey(destination),
+            destinationTokenAccountPublicKey,
+            destinationPublicKey,
             mintKey
         )
     }
 
     instructions += TokenProgram.transferChecked(
-            ownerTokenAccount,
-            destinationTokenAccount,
+            ownerTokenAccountPublicKey,
+            destinationTokenAccountPublicKey,
             amount.toLong(),
             mintDecimals.toByte(),
             ownerPublicKey,
