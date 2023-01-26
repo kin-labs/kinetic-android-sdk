@@ -55,6 +55,93 @@ class TransactionApi(basePath: kotlin.String = defaultBasePath, client: OkHttpCl
      * 
      * @param environment 
      * @param index 
+     * @param referenceId 
+     * @param referenceType 
+     * @param signature 
+     * @return kotlin.collections.List<Transaction>
+     * @throws IllegalStateException If the request is not correctly configured
+     * @throws IOException Rethrows the OkHttp execute method exception
+     * @throws UnsupportedOperationException If the API returns an informational or redirection response
+     * @throws ClientException If the API returns a client error response
+     * @throws ServerException If the API returns a server error response
+     */
+    @Suppress("UNCHECKED_CAST")
+    @Throws(IllegalStateException::class, IOException::class, UnsupportedOperationException::class, ClientException::class, ServerException::class)
+    fun getKineticTransaction(environment: kotlin.String, index: kotlin.Int, referenceId: kotlin.String, referenceType: kotlin.String, signature: kotlin.String) : kotlin.collections.List<Transaction> {
+        val localVarResponse = getKineticTransactionWithHttpInfo(environment = environment, index = index, referenceId = referenceId, referenceType = referenceType, signature = signature)
+
+        return when (localVarResponse.responseType) {
+            ResponseType.Success -> (localVarResponse as Success<*>).data as kotlin.collections.List<Transaction>
+            ResponseType.Informational -> throw UnsupportedOperationException("Client does not support Informational responses.")
+            ResponseType.Redirection -> throw UnsupportedOperationException("Client does not support Redirection responses.")
+            ResponseType.ClientError -> {
+                val localVarError = localVarResponse as ClientError<*>
+                throw ClientException("Client error : ${localVarError.statusCode} ${localVarError.message.orEmpty()}", localVarError.statusCode, localVarResponse)
+            }
+            ResponseType.ServerError -> {
+                val localVarError = localVarResponse as ServerError<*>
+                throw ServerException("Server error : ${localVarError.statusCode} ${localVarError.message.orEmpty()}", localVarError.statusCode, localVarResponse)
+            }
+        }
+    }
+
+    /**
+     * 
+     * 
+     * @param environment 
+     * @param index 
+     * @param referenceId 
+     * @param referenceType 
+     * @param signature 
+     * @return ApiResponse<kotlin.collections.List<Transaction>?>
+     * @throws IllegalStateException If the request is not correctly configured
+     * @throws IOException Rethrows the OkHttp execute method exception
+     */
+    @Suppress("UNCHECKED_CAST")
+    @Throws(IllegalStateException::class, IOException::class)
+    fun getKineticTransactionWithHttpInfo(environment: kotlin.String, index: kotlin.Int, referenceId: kotlin.String, referenceType: kotlin.String, signature: kotlin.String) : ApiResponse<kotlin.collections.List<Transaction>?> {
+        val localVariableConfig = getKineticTransactionRequestConfig(environment = environment, index = index, referenceId = referenceId, referenceType = referenceType, signature = signature)
+
+        return request<Unit, kotlin.collections.List<Transaction>>(
+            localVariableConfig
+        )
+    }
+
+    /**
+     * To obtain the request config of the operation getKineticTransaction
+     *
+     * @param environment 
+     * @param index 
+     * @param referenceId 
+     * @param referenceType 
+     * @param signature 
+     * @return RequestConfig
+     */
+    fun getKineticTransactionRequestConfig(environment: kotlin.String, index: kotlin.Int, referenceId: kotlin.String, referenceType: kotlin.String, signature: kotlin.String) : RequestConfig<Unit> {
+        val localVariableBody = null
+        val localVariableQuery: MultiValueMap = mutableMapOf<kotlin.String, kotlin.collections.List<kotlin.String>>()
+            .apply {
+                put("referenceId", listOf(referenceId.toString()))
+                put("referenceType", listOf(referenceType.toString()))
+                put("signature", listOf(signature.toString()))
+            }
+        val localVariableHeaders: MutableMap<String, String> = mutableMapOf()
+        localVariableHeaders["Accept"] = "application/json"
+
+        return RequestConfig(
+            method = RequestMethod.GET,
+            path = "/api/transaction/kinetic-transaction/{environment}/{index}".replace("{"+"environment"+"}", encodeURIComponent(environment.toString())).replace("{"+"index"+"}", encodeURIComponent(index.toString())),
+            query = localVariableQuery,
+            headers = localVariableHeaders,
+            body = localVariableBody
+        )
+    }
+
+    /**
+     * 
+     * 
+     * @param environment 
+     * @param index 
      * @return LatestBlockhashResponse
      * @throws IllegalStateException If the request is not correctly configured
      * @throws IOException Rethrows the OkHttp execute method exception

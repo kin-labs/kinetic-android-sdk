@@ -12,6 +12,7 @@ import org.kin.kinetic.generated.api.*
 import org.kin.kinetic.generated.api.model.*
 import org.kin.kinetic.generated.api.model.Transaction
 import org.kin.kinetic.helpers.addDecimals
+import org.kin.kinetic.helpers.getTokenAddress
 import java.time.Instant
 
 class KineticSdkInternal(
@@ -39,8 +40,35 @@ class KineticSdkInternal(
         transactionApi = TransactionApi(basePath = sdkConfig.endpoint, headers = apiHeaders)
         appApi = AppApi(basePath = sdkConfig.endpoint, headers = apiHeaders)
 
-        log(LogLevel.INFO, "Initializing $NAME@$VERSION\nendpoint: ${sdkConfig.endpoint}, environment: ${sdkConfig.environment}, index: ${sdkConfig.index}")
+        log(LogLevel.INFO, "Initializing ${BuildConfig.LIBRARY_NAME}@${BuildConfig.LIBRARY_VERSION}\nendpoint: ${sdkConfig.endpoint}, environment: ${sdkConfig.environment}, index: ${sdkConfig.index}")
     }
+
+    suspend fun closeAccount(
+        account: String,
+        commitment: Commitment?,
+        mint: String?,
+        referenceId: String?,
+        referenceType: String?,
+    ): Transaction {
+        val appConfig = ensureAppConfig()
+        var commitment = getCommitment(commitment)
+        val mint = getAppMint(appConfig, mint)
+
+        val closeAccountRequest = CloseAccountRequest(
+            account = account,
+            commitment = commitment,
+            environment = sdkConfig.environment,
+            index = sdkConfig.index,
+            mint = mint.publicKey,
+            referenceId = referenceId,
+            referenceType = referenceType
+        )
+
+        return withContext(dispatcher) {
+            accountApi.closeAccount(closeAccountRequest)
+        }
+    }
+
 
     suspend fun createAccount(
         owner: Keypair,
@@ -84,6 +112,16 @@ class KineticSdkInternal(
 
         return withContext(dispatcher) {
             accountApi.createAccount(createAccountRequest)
+        }
+    }
+
+    suspend fun getAccountInfo(account: String, commitment: Commitment?, mint: String?): AccountInfo {
+        val appConfig = ensureAppConfig()
+        val commitment = getCommitment(commitment)
+        val mint = getAppMint(appConfig, mint)
+
+        return withContext(dispatcher) {
+            accountApi.getAccountInfo(sdkConfig.environment, sdkConfig.index, account, mint.publicKey, commitment)
         }
     }
 
@@ -145,11 +183,21 @@ class KineticSdkInternal(
         val mint = getAppMint(appConfig, mint)
         val amount = addDecimals(amount, mint.decimals).toString()
 
-        this.validateDestination(appConfig, destination)
+        val ownerTokenAccount = this.findTokenAccount(owner.publicKey, commitment, mint.publicKey)
+            ?: error("Owner account doesn't exist for mint ${mint.publicKey}")
+        var destinationTokenAccount = this.findTokenAccount(destination, commitment, mint.publicKey)
 
-        val accounts = this@KineticSdkInternal.getTokenAccounts(destination, commitment, mint.publicKey)
-        if (accounts.isEmpty() && !senderCreate) {
-            error("Destination account does not exist")
+        if (destinationTokenAccount == null && !senderCreate) {
+            error("Destination account doesn't exist for mint ${mint.publicKey}")
+        }
+
+        var senderCreateTokenAccount: String? = null
+        if (destinationTokenAccount == null && senderCreate) {
+            senderCreateTokenAccount = getTokenAddress(destination, mint.publicKey)
+        }
+
+        if (destinationTokenAccount == null && senderCreateTokenAccount == null) {
+            error("Destination token account not found.")
         }
 
         val latestBlockhashResponseJob = this@KineticSdkInternal.getBlockhash()
@@ -160,12 +208,14 @@ class KineticSdkInternal(
             amount,
             latestBlockhashResponse.blockhash,
             destination,
+            destinationTokenAccount ?: senderCreateTokenAccount!!,
             sdkConfig.index,
             mint.decimals,
             mint.feePayer,
             mint.publicKey,
             owner.solana,
-            accounts.isEmpty() && senderCreate,
+            ownerTokenAccount,
+            senderCreateTokenAccount != null && senderCreate,
             type
         )
 
@@ -219,12 +269,26 @@ class KineticSdkInternal(
         return headers + mapOf(
             Pair("kinetic-environment", sdkConfig.environment),
             Pair("kinetic-index", sdkConfig.index.toString()),
-            Pair("kinetic-user-agent", "$NAME@$VERSION")
+            Pair("kinetic-user-agent", "${BuildConfig.LIBRARY_NAME}@${BuildConfig.LIBRARY_VERSION}")
         )
     }
 
     private fun ensureAppConfig(): AppConfig {
         appConfig?.let { return it } ?: error("App config not initialized")
+    }
+
+    private suspend fun findTokenAccount(
+        account: String,
+        commitment: Commitment,
+        mint: String
+    ): String? {
+        val accountInfo = getAccountInfo(account, commitment, mint)
+
+        if (accountInfo.isMint) {
+            error("Account is a mint account.")
+        }
+
+        return accountInfo.tokens?.find { tokenInfo -> tokenInfo.mint == mint }?.account
     }
 
     private fun getAppMint(appConfig: AppConfig, mint: String?): AppConfigMint {
@@ -243,13 +307,7 @@ class KineticSdkInternal(
         return commitment ?: sdkConfig.commitment ?: Commitment.confirmed
     }
 
-    private fun validateDestination(appConfig: AppConfig, destination: String) {
-        if (appConfig.mints.find { mint -> mint.publicKey == destination } != null) {
-            error("Cannot transfer to a mint address")
-        }
-    }
-
     private fun log(level: LogLevel, message: String) {
-        logger.update { Pair(level, "$NAME::${Instant.now()}::${message}") }
+        logger.update { Pair(level, "${BuildConfig.LIBRARY_NAME}::${Instant.now()}::${message}") }
     }
 }

@@ -11,7 +11,6 @@ import org.bitcoinj.crypto.MnemonicCode
 import org.bitcoinj.script.Script
 import org.bitcoinj.wallet.Wallet
 
-
 class Keypair {
     private var keyPair: TweetNaclFast.Signature.KeyPair
     var mnemonic: List<String>? = null
@@ -49,18 +48,31 @@ class Keypair {
         }
 
         fun fromMnemonic(mnemonic: List<String>): Keypair {
-            val seed = MnemonicCode.toSeed(mnemonic, "")
-            val privateKey = SolanaBip44().getPrivateKeyFromSeed(seed, DerivableType.BIP44CHANGE)
-            var keypair = TweetNaclFast.Signature.keyPair_fromSeed(privateKey)
-
-            return Keypair(keypair).apply {
-                this.mnemonic = mnemonic
-            }
+            return fromMnemonicSet(mnemonic)[0]
         }
 
-        // TODO: Not implemented, need update to SolanaKT to allow passing in account number
-//        fun fromMnemonicSet(mnemonic: List<String>, from: Int = 0, to: Int = 10): List<Keypair> {
-//        }
+        fun fromMnemonicSet(mnemonic: List<String>, from: Int = 0, to: Int = 10): List<Keypair> {
+            // Always start with zero as minimum
+            val from = if (from < 0) 0 else from
+            // Always generate at least 1
+            val to = if (to <= from) from + 1 else to
+
+            val seed = MnemonicCode.toSeed(mnemonic, "")
+            var keys: List<Keypair> = emptyList()
+            for (i in from until to) {
+                var kp = derive(seed, i)
+                kp.mnemonic = mnemonic
+                keys += kp
+            }
+
+            return keys
+        }
+
+        fun derive(seed: ByteArray, walletIndex: Int): Keypair {
+            val privateKey = SolanaBip44().getPrivateKeyFromSeed(seed, DerivableType.BIP44CHANGE, walletIndex.toLong())
+            var kp = Keypair(TweetNaclFast.Signature.keyPair_fromSeed(privateKey))
+            return kp
+        }
 
         fun fromSecretKey(secretKey: String): Keypair {
             return Keypair(secretKey)

@@ -61,7 +61,7 @@
         "tags": ["account"]
       }
     },
-    "/api/account/info/{environment}/{index}/{accountId}": {
+    "/api/account/info/{environment}/{index}/{accountId}/{mint}": {
       "get": {
         "operationId": "getAccountInfo",
         "summary": "",
@@ -84,6 +84,14 @@
           },
           {
             "name": "accountId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "mint",
             "required": true,
             "in": "path",
             "schema": {
@@ -399,6 +407,70 @@
         "tags": ["app"]
       }
     },
+    "/api/transaction/kinetic-transaction/{environment}/{index}": {
+      "get": {
+        "operationId": "getKineticTransaction",
+        "summary": "",
+        "parameters": [
+          {
+            "name": "environment",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "index",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "referenceId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "referenceType",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "signature",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Transaction"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["transaction"]
+      }
+    },
     "/api/transaction/latest-blockhash/{environment}/{index}": {
       "get": {
         "operationId": "getLatestBlockhash",
@@ -568,7 +640,7 @@
   "info": {
     "title": "@kin-kinetic/api",
     "description": "The OpenAPI definition of the Kinetic API",
-    "version": "1.0.0-rc.12",
+    "version": "1.0.0-rc.14",
     "contact": {}
   },
   "tags": [

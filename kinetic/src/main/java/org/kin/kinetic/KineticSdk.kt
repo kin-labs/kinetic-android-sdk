@@ -2,7 +2,7 @@ package org.kin.kinetic
 
 import org.kin.kinetic.helpers.getSolanaRPCEndpoint
 import com.solana.Solana
-import com.solana.networking.OkHttpNetworkingRouter
+import com.solana.networking.HttpNetworkingRouter
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import org.kin.kinetic.generated.api.model.*
@@ -37,6 +37,22 @@ class KineticSdk {
             return this.sdkConfig.solanaRpcEndpoint
         }
 
+    suspend fun closeAccount(
+        account: String,
+        commitment: Commitment? = null,
+        mint: String? = null,
+        referenceId: String? = null,
+        referenceType: String? = null
+    ): Transaction {
+        return internal.closeAccount(
+            account,
+            commitment,
+            mint,
+            referenceId,
+            referenceType
+        )
+    }
+
     suspend fun createAccount(
         owner: Keypair,
         commitment: Commitment? = null,
@@ -51,6 +67,10 @@ class KineticSdk {
             referenceId,
             referenceType
         )
+    }
+
+    suspend fun getAccountInfo(account: String, commitment: Commitment? = null, mint: String? = null): AccountInfo {
+        return internal.getAccountInfo(account, commitment, mint)
     }
 
     suspend fun getBalance(account: String, commitment: Commitment? = null): BalanceResponse {
@@ -115,7 +135,7 @@ class KineticSdk {
         val config = internal.getAppConfig(sdkConfig.environment, sdkConfig.index)
         val rpcEndpoint = if (sdkConfig.solanaRpcEndpoint != null) getSolanaRPCEndpoint(sdkConfig.solanaRpcEndpoint)
             else getSolanaRPCEndpoint(config.environment.cluster.endpoint)
-        val networkingRouter = OkHttpNetworkingRouter(rpcEndpoint)
+        val networkingRouter = HttpNetworkingRouter(rpcEndpoint)
         solana = Solana(networkingRouter)
         return config
     }

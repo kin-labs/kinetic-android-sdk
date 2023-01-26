@@ -30,6 +30,19 @@
             android:textSize="9sp" />
 
         <Button
+            android:id="@+id/get_account_info_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Get Account Info" />
+
+        <TextView
+            android:id="@+id/kin_account_info_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textSize="9sp" />
+
+        <Button
             android:id="@+id/get_balance_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -115,6 +128,19 @@
 
         <TextView
             android:id="@+id/transaction_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textSize="9sp" />
+
+        <Button
+            android:id="@+id/close_account_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Close Account" />
+
+        <TextView
+            android:id="@+id/close_account_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAlignment="center"

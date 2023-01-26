@@ -17,7 +17,9 @@ internal fun generateCreateAccountTransaction(
     val ownerPublicKey = owner.publicKey
 
     // Get AssociatedTokenAccount
-    val ownerTokenAccount = getAssociatedTokenAddress(ownerPublicKey, mintKey)
+    val ownerTokenAccount = getTokenAddress(ownerPublicKey.toBase58(), mintPublicKey)
+        ?: error("Owner token account not found.")
+    val ownerTokenAccountPublicKey = PublicKey(ownerTokenAccount)
 
     var instructions = emptyArray<TransactionInstruction>()
 
@@ -27,13 +29,13 @@ internal fun generateCreateAccountTransaction(
 
     instructions += createAssociatedTokenAccountInstruction(
         feePayerKey,
-        ownerTokenAccount,
+        ownerTokenAccountPublicKey,
         ownerPublicKey,
         mintKey
     )
 
     instructions += createSetCloseAuthorityInstruction(
-        ownerTokenAccount,
+        ownerTokenAccountPublicKey,
         ownerPublicKey,
         feePayerKey
     )
